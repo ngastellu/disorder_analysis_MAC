@@ -170,9 +170,9 @@ def plot_ring_stats(datadir,avg_file,std_file=None,normalise=True, distinguished
     ax.set_xlabel('Ring types')
     
     if distinguished_hexagons:
-        ax.set_xticks(x+dx, ['3', '4', '5', '6-i', '6-c'] + [str(n) for n in range(7,nrings+2)])
+        ax.set_xticks(x, ['3', '4', '5', '6-c', '6-i'] + [str(n) for n in range(7,nrings+2)])
     else:
-        ax.set_xticks(x+dx, [str(n) for n in range(3,nrings+3)])
+        ax.set_xticks(x, [str(n) for n in range(3,nrings+3)])
     
     if normalise:
         ax.set_ylabel('Average count (normalised)')
