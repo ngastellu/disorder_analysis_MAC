@@ -38,9 +38,22 @@ avg2 = np.mean(sel_points2,axis=0)
 
 sel_points_del = sel_points2_old[~mask]
 
-s_added_final = np.array(list(set(s_added[mask]) | s1))
-sel_points_final = np.vstack((p6i[np.array(list(s_added_final))],p6c[np.array(list(s_added_final))])).T 
-avg_final = np.mean(sel_points_final,axis=0)
+s_added2 = np.array(list(set(s_added[mask]) | s1))
+sel_points2 = np.vstack((p6i[np.array(list(s_added2))],p6c[np.array(list(s_added2))])).T 
+avg2 = np.mean(sel_points2,axis=0)
+
+s_added2 = set(s_added2)
+
+big_p6i = set((p6i > 0.4).nonzero()[0])
+big_p6c = set(((p6c > 0.5) * (p6i > 0.12)).nonzero()[0])
+
+s_added3 = s_added2 | big_p6i
+sel_points3 = np.vstack((p6i[np.array(list(s_added3))],p6c[np.array(list(s_added3))])).T 
+avg3 = np.mean(sel_points3,axis=0)
+
+s_added4 = s_added3 | big_p6c
+sel_points4 = np.vstack((p6i[np.array(list(s_added4))],p6c[np.array(list(s_added4))])).T 
+avg4 = np.mean(sel_points4,axis=0)
 
 
 
@@ -63,20 +76,19 @@ ax.set_aspect('equal')
 plt.show()
 
 print('Size of first set: ', nums)
-print('Nb of final points: ', sel_points_final.shape[0])
+print('Nb of final points: ', sel_points4.shape[0])
 print(avg1)
-print(avg_final)
+print(avg4)
 print(target)
-
 
 fig, ax = plt.subplots()
 ax.scatter(p6i,p6c,alpha=0.7,s=20.0,zorder=1)
-ax.scatter(*sel_points_final.T,c='red',alpha=0.9,zorder=2,s=20.0)
+ax.scatter(*sel_points3.T,c='red',alpha=0.9,zorder=2,s=20.0)
 
 
 ax.scatter(*target,marker='*',s=200.0,c='limegreen',edgecolors='k',lw=0.7)
 ax.scatter(*avg1,marker='*',s=200.0,c='orange',edgecolors='white',lw=0.7,zorder=3)
-ax.scatter(*avg_final,marker='*',s=200.0,c='r',edgecolors='white',lw=0.7,zorder=3)
+ax.scatter(*avg3,marker='*',s=200.0,c='r',edgecolors='white',lw=0.7,zorder=3)
 ax.set_xlabel('$p_{6i}$')
 ax.set_ylabel('$p_{6c}$')
 ax.set_aspect('equal')
@@ -84,5 +96,19 @@ plt.show()
 
 
 all_pos = np.load('/Users/nico/Desktop/scripts/MAP_training/training/data/coords_13944p6.npy')
-selected_pos = all_pos[s_added_final,:]
+selected_pos = all_pos[np.array(list(s_added4))]
 np.save(f'AMC400_training_data_volker.npy', selected_pos)
+
+fig, ax = plt.subplots()
+ax.scatter(p6i,p6c,alpha=0.7,s=20.0,zorder=1)
+ax.scatter(*sel_points4.T,c='red',alpha=0.9,zorder=2,s=20.0)
+
+
+ax.scatter(*target,marker='*',s=200.0,c='limegreen',edgecolors='k',lw=0.7)
+ax.scatter(*avg1,marker='*',s=200.0,c='orange',edgecolors='white',lw=0.7,zorder=3)
+ax.scatter(*avg4,marker='*',s=200.0,c='r',edgecolors='white',lw=0.7,zorder=3)
+ax.set_xlabel('$p_{6i}$')
+ax.set_ylabel('$p_{6c}$')
+ax.set_aspect('equal')
+plt.show()
+
