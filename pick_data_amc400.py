@@ -45,7 +45,14 @@ avg2 = np.mean(sel_points2,axis=0)
 s_added2 = set(s_added2)
 
 big_p6i = set((p6i > 0.4).nonzero()[0])
+
+# We want to add high-p6c points who also have p6i values, we do this by
+# picking all points who lie above a certain slanted line in the (p6i,p6c) plane
+# slope1 = 1.607
+slope2 = 2.1
 big_p6c = set(((p6c > 0.5) * (p6i > 0.12)).nonzero()[0])
+big_p6c = set((p6c > (0.97 - slope2*p6i)).nonzero()[0])
+
 
 s_added3 = s_added2 | big_p6i
 sel_points3 = np.vstack((p6i[np.array(list(s_added3))],p6c[np.array(list(s_added3))])).T 
@@ -97,6 +104,7 @@ plt.show()
 
 all_pos = np.load('/Users/nico/Desktop/scripts/MAP_training/training/data/coords_13944p6.npy')
 selected_pos = all_pos[np.array(list(s_added4))]
+np.save('AMC400_selected_indices.npy', np.array(list(s_added4)))
 np.save(f'AMC400_training_data_volker.npy', selected_pos)
 
 fig, ax = plt.subplots()
