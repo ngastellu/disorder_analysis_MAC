@@ -26,6 +26,6 @@ ring_stats = np.zeros((istrucs.shape[0],7))
 
 for k, n in enumerate(istrucs):
     pos = all_coords[n][:,[0,2]]
-    ring_stats[n,:] = count_rings(pos, rCC, distinguish_hexagons=True,max_size=8)[0]
+    ring_stats[k,:] = count_rings(pos, rCC, distinguish_hexagons=True,max_size=8)[0]
 
 np.save(f'ring_stats_all_strucs-{nn}.npy', ring_stats)
