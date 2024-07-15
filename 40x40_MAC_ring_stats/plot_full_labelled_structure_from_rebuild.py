@@ -16,7 +16,7 @@ nn = 25
 rCC = 1.8
 
 ddir = f'/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/plot_labelled_tdot5_structure/sample-{nn}/'
-pos = read_xyz(f'/Users/nico/Desktop/simulation_outputs/MAC_structures/relaxed_no_dangle/tempdot5/tempdot5n{nn}  _relaxed_no-dangle.xyz')
+pos = read_xyz(f'/Users/nico/Desktop/simulation_outputs/MAC_structures/relaxed_no_dangle/tempdot5/tempdot5n{nn}_relaxed_no-dangle.xyz')
 pos = pos[:,:2]
 M = adjacency_matrix_sparse(pos,rCC)
 
@@ -37,7 +37,7 @@ cluster_centres = [np.array([hex_centres[i] for i in c]) for c in cryst_clusters
 
 
 # rcParams['figure.figsize'] = [19.2,14.4]
-# rcParams['figure.figsize'] = [12.8,9.6]
+rcParams['figure.figsize'] = [12.8,9.6]
 fig, ax  = plot_atoms_w_bonds(pos,M,dotsize=1.0,show=False)
 
 
@@ -55,7 +55,7 @@ ax.scatter(*ring_centers.T, c=center_clrs, s=4.0, zorder=3)
 for cc in cluster_centres:
     ax.scatter(*cc.T,c='limegreen',s=4.0,zorder=4)
 
-# plt.savefig('/Users/nico/Desktop/GM_presentations/gm_presentation_2024-06-25/tempdot5_example.png',bbox_inches='tight')
+plt.savefig('/Users/nico/Desktop/figures_worth_saving/charge_hopping_paper_intermediate_figs/tdot5_full_structure.eps',bbox_inches='tight')
 plt.show()
 
 # x_bounds = [100,190]

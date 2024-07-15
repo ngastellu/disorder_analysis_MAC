@@ -24,7 +24,7 @@ sel_points1 = np.vstack((p6i[iselected],p6c[iselected])).T
 avg1 = np.mean(sel_points1,axis=0)
 
 # lower the tolerance but pick only points with more 6c
-tolerance2 = 0.25
+tolerance2 = 0.30
 r2 = tolerance2 * np.sqrt(2)
 iselected2 = tree.query_ball_point(target,r2)
 s2 = set(iselected2)
@@ -32,7 +32,7 @@ s_added = np.array(list(s2 - s1))
 nums_added = len(s_added)
 sel_points2 = np.vstack((p6i[np.array(list(s_added))],p6c[np.array(list(s_added))])).T
 sel_points2_old = sel_points2.copy()
-mask = (sel_points2[:,1] > 0.27) * (sel_points2[:,0] > 0.3)
+mask = (sel_points2[:,1] > 0.27) * (sel_points2[:,0] > 0.27)
 sel_points2 = sel_points2[mask]
 avg2 = np.mean(sel_points2,axis=0)
 
@@ -63,7 +63,7 @@ ax.set_aspect('equal')
 plt.show()
 
 print('Size of first set: ', nums)
-print('Nb of added points: ', nums_added)
+print('Nb of final points: ', sel_points_final.shape[0])
 print(avg1)
 print(avg_final)
 print(target)
@@ -81,3 +81,8 @@ ax.set_xlabel('$p_{6i}$')
 ax.set_ylabel('$p_{6c}$')
 ax.set_aspect('equal')
 plt.show()
+
+
+all_pos = np.load('/Users/nico/Desktop/scripts/MAP_training/training/data/coords_13944p6.npy')
+selected_pos = all_pos[s_added_final,:]
+np.save(f'AMC400_training_data_volker.npy', selected_pos)
