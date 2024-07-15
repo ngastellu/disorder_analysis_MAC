@@ -12,36 +12,72 @@ p6c = ring_stats[:,4] / ring_stats.sum(axis=1)
 tree = KDTree(np.vstack((p6i,p6c)).T)
 
 target = np.array([0.445,0.279])
-tols = np.linspace(0.08,0.11,10) # max allowed deviation from AMC400 ring stats
-tols = tols[::-1]
-clrs = get_cm(tols,max_val=0.8,cmap_str='inferno')
-avgs = np.zeros((tols.shape[0],2))
-nums = np.zeros(tols.shape[0],dtype='int')
 
-zz = 1
+
+tolerance = 0.08 # allow 8% deviation from AMC-400 ring stats
+r = tolerance * np.sqrt(2) #distance from AMC-400 in (p6i,p6c) space
+iselected = tree.query_ball_point(target,r)
+nums = len(iselected)
+
+s1 = set(iselected)
+sel_points1 = np.vstack((p6i[iselected],p6c[iselected])).T
+avg1 = np.mean(sel_points1,axis=0)
+
+# lower the tolerance but pick only points with more 6c
+tolerance2 = 0.25
+r2 = tolerance2 * np.sqrt(2)
+iselected2 = tree.query_ball_point(target,r2)
+s2 = set(iselected2)
+s_added = np.array(list(s2 - s1))
+nums_added = len(s_added)
+sel_points2 = np.vstack((p6i[np.array(list(s_added))],p6c[np.array(list(s_added))])).T
+sel_points2_old = sel_points2.copy()
+mask = (sel_points2[:,1] > 0.27) * (sel_points2[:,0] > 0.3)
+sel_points2 = sel_points2[mask]
+avg2 = np.mean(sel_points2,axis=0)
+
+sel_points_del = sel_points2_old[~mask]
+
+s_added_final = np.array(list(set(s_added[mask]) | s1))
+sel_points_final = np.vstack((p6i[np.array(list(s_added_final))],p6c[np.array(list(s_added_final))])).T 
+avg_final = np.mean(sel_points_final,axis=0)
+
+
+
 
 setup_tex()
 fig, ax = plt.subplots()
 
-
-for k, tolerance in enumerate(tols):
-    r = tolerance * np.sqrt(2) #distance from AMC-400 in (p6i,p6c) space
-    iselected = tree.query_ball_point(target,r)
-    avgs[k,0] = np.mean(p6i[iselected])
-    avgs[k,1] = np.mean(p6c[iselected])
-    nums[k] = len(iselected)
-
-    ax.scatter(p6i,p6c,alpha=0.7,s=20.0)
-    ax.scatter(p6i[iselected],p6c[iselected],alpha=0.9,s=20.0,c=clrs[k],zorder=zz)
-    ax.scatter(np.mean(p6i[iselected]),np.mean(p6c[iselected]),marker='*',s=100.0,c=clrs[k],edgecolors='white',lw=0.7,zorder=zz+10)
-    zz += 1
+ax.scatter(p6i,p6c,alpha=0.7,s=20.0,zorder=1)
+ax.scatter(*sel_points1.T,c='orange',alpha=0.9,zorder=2)
+ax.scatter(*sel_points2.T,c='red',alpha=0.9,zorder=2)
+ax.scatter(*sel_points_del.T,c='violet',alpha=0.3,zorder=2)
 
 
-ax.scatter(*target,marker='*',s=200.0,c='r',edgecolors='k',lw=0.7)
+ax.scatter(*target,marker='*',s=200.0,c='limegreen',edgecolors='k',lw=0.7)
+ax.scatter(*avg2,marker='*',s=200.0,c='r',edgecolors='white',lw=0.7,zorder=3)
+ax.scatter(*avg1,marker='*',s=200.0,c='orange',edgecolors='white',lw=0.7,zorder=3)
 ax.set_xlabel('$p_{6i}$')
 ax.set_ylabel('$p_{6c}$')
 ax.set_aspect('equal')
 plt.show()
 
-plt.plot(tols, nums,'-o')
+print('Size of first set: ', nums)
+print('Nb of added points: ', nums_added)
+print(avg1)
+print(avg_final)
+print(target)
+
+
+fig, ax = plt.subplots()
+ax.scatter(p6i,p6c,alpha=0.7,s=20.0,zorder=1)
+ax.scatter(*sel_points_final.T,c='red',alpha=0.9,zorder=2,s=20.0)
+
+
+ax.scatter(*target,marker='*',s=200.0,c='limegreen',edgecolors='k',lw=0.7)
+ax.scatter(*avg1,marker='*',s=200.0,c='orange',edgecolors='white',lw=0.7,zorder=3)
+ax.scatter(*avg_final,marker='*',s=200.0,c='r',edgecolors='white',lw=0.7,zorder=3)
+ax.set_xlabel('$p_{6i}$')
+ax.set_ylabel('$p_{6c}$')
+ax.set_aspect('equal')
 plt.show()
