@@ -108,10 +108,10 @@ def compare_ring_stats(datadir,avg_files,labels,std_files=None,normalised=None, 
         ax.set_xticks(x+dx, [str(n) for n in range(3,nrings+3)],fontsize=fontsize)
     
     if reproduce_nature_tian:
-        ax.set_xticks(x+dx, ['3', '4', '5', '6-c', '6-i','7/8'],fontsize=fontsize)
+        ax.set_xticks(x+dx, [str(3), str(4), str(5), str(6) + '-c', str(6) + '-i',str(7) + '/' + str(8)],fontsize=fontsize)
     
     if normalised is not None:
-        ax.set_ylabel('Percentage (%)',fontsize=fontsize)
+        ax.set_ylabel('Percentage (\%)',fontsize=fontsize)
     else:
         ax.set_ylabel('Average count',fontsize=fontsize)
 
@@ -204,7 +204,8 @@ if __name__ == "__main__":
 
     clrs = ['darkorange', 'darkviolet', 'forestgreen']
     # clrs = MAC_ensemble_colours(clr_type='two_ensembles')
-    compare_ring_stats(datadir, avgfiles, labels, normalised=[False, False, False],title=None, fontsize=30,colors=clrs, reproduce_nature_tian=True)
+    setup_tex(fontsize=25)
+    compare_ring_stats(datadir, avgfiles, labels, normalised=[False, False, False],title=None, fontsize=40,colors=clrs, reproduce_nature_tian=True)
 
     # avgfile = 'avg_ring_counts_tempdot6_new_model_relaxed.npy' 
     # plot_ring_stats(datadir,avgfile,title='Ring stats for conditional model ($T = 0.6$, $N = 132$ structures)',normalise=True)

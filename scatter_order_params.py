@@ -23,8 +23,10 @@ setup_tex(fontsize=40)
 fig, ax = plt.subplots()
 rcParams['font.size'] = 40
 rcParams['figure.figsize'] = [12.8,9.6]
+# rcParams['figure.figsize'] = [12,10.6]
 
 for st, lbl, c in zip(structypes,labels,clrs):
+    print(st)
     rhos_dat = np.load(ddir_rho + f'rho_sites_{st}.npy')
     etas_dat = np.load(ddir_eta + f'eta_MRO_{st}.npy')
 
@@ -35,7 +37,7 @@ for st, lbl, c in zip(structypes,labels,clrs):
     scat_dat = np.zeros((ii.shape[0],2))
     
     for k,i in enumerate(ii):
-        print(etas_dat[:,0] == i)
+        # print(etas_dat[:,0] == i)
         eta = etas_dat[etas_dat[:,0]==i,1]
         rho = rhos_dat[rhos_dat[:,0]==i,1] * 100
         scat_dat[k,0] = eta
@@ -44,8 +46,10 @@ for st, lbl, c in zip(structypes,labels,clrs):
     ax.scatter(*scat_dat[:-1].T,s=70.0,c=c,alpha=0.7,zorder=1)
     ax.scatter(*scat_dat[-1].T,s=70.0,c=c,alpha=0.5,zorder=1)
     ax.scatter(*np.mean(scat_dat,axis=0).T,s=320.0,marker='*',c=c,zorder=2,edgecolor='k',lw=1.5,label=lbl)
+    print(*np.mean(scat_dat,axis=0))
 
-ax.scatter(1/1600,0,s=320.0,marker='*',c='#8018ff',edgecolor='k',lw=1.5,label='graphene')
+# ax.scatter(1/1600,0,s=320.0,marker='*',c='#8018ff',edgecolor='k',lw=1.5,label='graphene')
+ax.scatter(1/1600,0,s=320.0,marker='*',c='#1897ff',edgecolor='k',lw=1.5,label='graphene')
 ax.set_xlabel('$\log\eta_{\\text{MRO}}$',fontsize=40)
 ax.set_ylabel('$\\rho_{\\text{sites}}$ [nm$^{-2}$]',fontsize=40)
 ax.legend()

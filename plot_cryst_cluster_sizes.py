@@ -38,16 +38,19 @@ clrs = MAC_ensemble_colours()
 
 
 
-rcParams['font.size'] = 30
+rcParams['font.size'] = 50
 rcParams['figure.figsize'] = [12.8,9.6]
 fig, axs = plt.subplots(len(sizes),1)
 
 for s, l, c, ax in zip(sizes, labels, clrs, axs):
     fig, ax = histogram(s,nbins=80,xlabel='',log_counts=True,show=False,plt_objs=(fig,ax),plt_kwargs={'color':c, 'label':l},usetex=False)
     ax.legend()
+    ax.tick_params('both',length=7.0,width=1.5,labelsize=37)
+    # ax.tick_params('x',length=5.0,width=1.0,labelsize=37)
 
 axs[-1].set_xlabel('Area [\AA$^2$]')
-plt.suptitle('Distribution of crystallite sizes')
+
+# plt.suptitle('Distribution of crystallite sizes')
 plt.show()
 
 
