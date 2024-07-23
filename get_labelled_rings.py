@@ -1,6 +1,9 @@
 
 #!/usr/bin/env python
 
+"""This script divides the structure into overlapping squares, and obtains the lengths and positions of the carbon
+rings in each subsample, in parallel (one MPI process ---> one subsample)."""
+
 import os
 import sys
 import numpy as np
@@ -57,8 +60,8 @@ else:
 full_pos = read_xyz(os.path.expanduser(f'~/scratch/clean_bigMAC/{structype}/relaxed_structures_no_dangle/{xyz_prefix}{nn}_relaxed_no-dangle.xyz'))
 full_pos = full_pos[:,:2]
 
-L = 400 #size of structure
-l = 80 #size of subsample on which each MPI process is working
+L = 400
+l = 80
 a = (L // l) - 1
 
 ii_sample = cartesian_product(np.arange(a),np.arange(a))
@@ -74,9 +77,13 @@ rCC = 1.8
 _, rings, M = count_rings(pos,rCC,max_size=7,return_cycles=True,return_M=True)
 
 hexs = [c for c in rings if len(c)==6]
+ring_lengths = np.array([len(c) for c in rings])
+ring_centers = cycle_centers(rings, pos)
 hex_centers = cycle_centers(hexs, pos)
 Mhex = hexagon_adjmat(hexs)
 
 np.save(f'M_hex-{nn}_{m}_{n}.npy', Mhex)
 np.save(f'M_atoms-{nn}_{m}_{n}.npy', M)
 np.save(f'hex_centers-{nn}_{m}_{n}.npy', hex_centers)
+np.save(f'ring_centers-{nn}_{m}_{n}.npy', ring_centers)
+np.save(f'ring_lengths-{nn}_{m}_{n}.npy', ring_lengths)
