@@ -13,13 +13,13 @@ area = 3 * np.sqrt(3) * a * a / 2
 
 
 npys = glob('/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/crystallite_sizes/tempdot5/*npy')
-sizes_tempdot5 = np.hstack([np.load(f) for f in npys]) * area
+sizes_tempdot5 = np.hstack([np.load(f) for f in npys]) # * area
 
 npys = glob('/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/crystallite_sizes/tempdot6/*npy')
-sizes_tempdot6 = np.hstack([np.load(f) for f in npys]) * area
+sizes_tempdot6 = np.hstack([np.load(f) for f in npys]) # * area
 
 npys = glob('/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/crystallite_sizes/40x40/*npy')
-sizes_pCNN = np.hstack([np.load(f) for f in npys]) * area
+sizes_pCNN = np.hstack([np.load(f) for f in npys]) # * area
 
 setup_tex(fontsize=40)
 
@@ -48,7 +48,8 @@ for s, l, c, ax in zip(sizes, labels, clrs, axs):
     ax.tick_params('both',length=7.0,width=1.5,labelsize=37)
     # ax.tick_params('x',length=5.0,width=1.0,labelsize=37)
 
-axs[-1].set_xlabel('Area [\AA$^2$]')
+# axs[-1].set_xlabel('Area [\AA$^2$]')
+axs[-1].set_xlabel('Crystallite size [nb. of hexagons]')
 
 # plt.suptitle('Distribution of crystallite sizes')
 plt.show()

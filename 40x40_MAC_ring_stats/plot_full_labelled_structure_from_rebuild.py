@@ -12,13 +12,15 @@ from qcnico.qcplots import plot_atoms, plot_atoms_w_bonds, plot_rings_MAC, size_
 
 
 
-nn = 25
+nn = 42
 rCC = 1.8
 
 ddir = f'/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/plot_labelled_tdot5_structure/sample-{nn}/'
 pos = read_xyz(f'/Users/nico/Desktop/simulation_outputs/MAC_structures/relaxed_no_dangle/tempdot5/tempdot5n{nn}_relaxed_no-dangle.xyz')
 pos = pos[:,:2]
 M = adjacency_matrix_sparse(pos,rCC)
+
+print(f'Got M.')
 
 with open(ddir + f'clusters-{nn}.pkl', 'rb') as fo: 
     cryst_clusters = pickle.load(fo)
@@ -35,10 +37,13 @@ for r, k in hex_centres_dict.items():
 
 cluster_centres = [np.array([hex_centres[i] for i in c]) for c in cryst_clusters]
 
+print('Got cluster centres.')
+
 
 # rcParams['figure.figsize'] = [19.2,14.4]
-rcParams['figure.figsize'] = [12.8,9.6]
+# rcParams['figure.figsize'] = [12.8,9.6]
 fig, ax  = plot_atoms_w_bonds(pos,M,dotsize=1.0,show=False)
+print('Plotted C skeletton.')
 
 
 # First plot all ring centers assuming all hexagons are isolated
@@ -50,12 +55,15 @@ ring_lengths[ring_lengths == 6] = -6 # label all hecagons as isolated; will fix 
 center_clrs = list(map(size_to_clr,ring_lengths)) 
 
 ax.scatter(*ring_centers.T, c=center_clrs, s=4.0, zorder=3)
+print('Plotted ring centers, except 6c.')
 
 # Now plot crystalline clusters over the mislabeled isolated hexs
 for cc in cluster_centres:
     ax.scatter(*cc.T,c='limegreen',s=4.0,zorder=4)
 
-plt.savefig('/Users/nico/Desktop/figures_worth_saving/charge_hopping_paper_intermediate_figs/tdot5_full_structure.eps',bbox_inches='tight')
+print('Plotted 6c.')
+
+# plt.savefig('/Users/nico/Desktop/figures_worth_saving/charge_hopping_paper_intermediate_figs/tdot5_full_structure.eps',bbox_inches='tight')
 plt.show()
 
 # x_bounds = [100,190]
