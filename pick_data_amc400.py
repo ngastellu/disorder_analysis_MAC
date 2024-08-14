@@ -3,7 +3,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.spatial import KDTree
-from qcnico.plt_utils import setup_tex, get_cm
+from qcnico.plt_utils import setup_tex, multiple_histograms
 
 ring_stats =  np.load('volker_full_dataset_ring_stats.npy')
 p6i = ring_stats[:,3] / ring_stats.sum(axis=1)
@@ -125,3 +125,7 @@ ax.set_ylabel('$p_{6c}$')
 ax.set_aspect('equal')
 plt.show()
 
+
+sel_p6i = sel_points_final[:,0]
+sel_p6c = sel_points_final[:,1]
+multiple_histograms((sel_p6c,sel_p6i), ('$p_{6c}$', '$p_{6i}$'))
