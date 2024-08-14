@@ -62,6 +62,11 @@ s_added4 = s_added3 | big_p6c
 sel_points4 = np.vstack((p6i[np.array(list(s_added4))],p6c[np.array(list(s_added4))])).T 
 avg4 = np.mean(sel_points4,axis=0)
 
+high_crystalline = set((p6c > 0.6).nonzero()[0])
+s_added_final = s_added4 | high_crystalline
+sel_points_final = np.vstack((p6i[np.array(list(s_added_final))],p6c[np.array(list(s_added_final))])).T 
+avg_final = np.mean(sel_points_final,axis=0)
+
 
 
 
@@ -83,9 +88,9 @@ ax.set_aspect('equal')
 plt.show()
 
 print('Size of first set: ', nums)
-print('Nb of final points: ', sel_points4.shape[0])
+print('Nb of final points: ', sel_points_final.shape[0])
 print(avg1)
-print(avg4)
+print(avg_final)
 print(target)
 
 fig, ax = plt.subplots()
@@ -103,18 +108,18 @@ plt.show()
 
 
 all_pos = np.load('/Users/nico/Desktop/scripts/MAP_training/training/data/coords_13944p6.npy')
-selected_pos = all_pos[np.array(list(s_added4))]
-np.save('AMC400_selected_indices.npy', np.array(list(s_added4)))
-np.save(f'AMC400_training_data_volker.npy', selected_pos)
+selected_pos = all_pos[np.array(list(s_added_final))]
+np.save('new_AMC400_selected_indices.npy', np.array(list(s_added_final)))
+np.save('new_AMC400_training_data_volker.npy', selected_pos)
 
 fig, ax = plt.subplots()
 ax.scatter(p6i,p6c,alpha=0.7,s=20.0,zorder=1)
-ax.scatter(*sel_points4.T,c='red',alpha=0.9,zorder=2,s=20.0)
+ax.scatter(*sel_points_final.T,c='red',alpha=0.9,zorder=2,s=20.0)
 
 
 ax.scatter(*target,marker='*',s=200.0,c='limegreen',edgecolors='k',lw=0.7)
 ax.scatter(*avg1,marker='*',s=200.0,c='orange',edgecolors='white',lw=0.7,zorder=3)
-ax.scatter(*avg4,marker='*',s=200.0,c='r',edgecolors='white',lw=0.7,zorder=3)
+ax.scatter(*avg_final,marker='*',s=200.0,c='r',edgecolors='white',lw=0.7,zorder=3)
 ax.set_xlabel('$p_{6i}$')
 ax.set_ylabel('$p_{6c}$')
 ax.set_aspect('equal')
