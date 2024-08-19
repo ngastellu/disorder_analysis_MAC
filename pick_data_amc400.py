@@ -4,12 +4,22 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.spatial import KDTree
 from qcnico.plt_utils import setup_tex, multiple_histograms
+import pickle
 
 ring_stats =  np.load('volker_full_dataset_ring_stats.npy')
 p6i = ring_stats[:,3] / ring_stats.sum(axis=1)
 p6c = ring_stats[:,4] / ring_stats.sum(axis=1)
 
+np.save('p6i_volker.npy', p6i)
+np.save('p6c_volker.npy', p6c)
+
 tree = KDTree(np.vstack((p6i,p6c)).T)
+
+ring_stats /= ring_stats.sum(axis=1)[:,None]
+ring_names = ['3', '4', '5', '6i', '6c', '7', '8']
+ring_stats_dict = {rn:rd for rn, rd in zip(ring_names, ring_stats.T)}
+with open('volker_ring_data_full_set.pkl', 'wb') as fo: #save data for Ata
+    pickle.dump(ring_stats_dict,fo)
 
 target = np.array([0.445,0.279])
 
