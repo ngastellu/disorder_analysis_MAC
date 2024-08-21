@@ -1,9 +1,6 @@
 
 #!/usr/bin/env python
 
-"""This script divides the structure into overlapping squares, and obtains the lengths and positions of the carbon
-rings in each subsample, in parallel (one MPI process ---> one subsample)."""
-
 import os
 import sys
 import numpy as np
@@ -11,6 +8,7 @@ from qcnico.coords_io import read_xyz
 from qcnico.graph_tools import adjacency_matrix_sparse, count_rings, cycle_centers, hexagon_adjmat
 from qcnico.lattice import cartesian_product
 from mpi4py import MPI
+import pickle 
 
 def subsample_MAC_half_step(pos,l,m,n,m_max,n_max):
     """Returns the l*l square sample of a L*L MAC structure corresponding to coordinates m*l ≤ x ≤ (m+1)*l and 
@@ -54,6 +52,8 @@ nn = int(sys.argv[2])
 
 if structype == '40x40':
     xyz_prefix = 'bigMAC-'
+elif structype == 'amc400':
+    xyz_prefix = 'amc400-
 else:
     xyz_prefix = structype + 'n'
 
@@ -87,3 +87,6 @@ np.save(f'M_atoms-{nn}_{m}_{n}.npy', M)
 np.save(f'hex_centers-{nn}_{m}_{n}.npy', hex_centers)
 np.save(f'ring_centers-{nn}_{m}_{n}.npy', ring_centers)
 np.save(f'ring_lengths-{nn}_{m}_{n}.npy', ring_lengths)
+
+with open(f'cycles-{nn}_{m}_{n}.pkl', 'wb') as fo:
+    pickle.dump(rings, fo)

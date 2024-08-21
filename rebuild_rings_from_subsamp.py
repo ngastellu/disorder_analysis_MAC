@@ -18,11 +18,11 @@ start = perf_counter()
 m,n = slice_inds[0,:]
 
 print(f'Initialising hash maps (m,n) = ({m,n})',flush=True)
-hex_pos_global = {tuple(r):k for k,r in enumerate(np.load(f'../../sample-{nn}/hex_centers-{nn}_{m}_{n}.npy'))} # global hashtable mapping hexagon centers to integer indices
-all_pos_global = {tuple(r):k for k,r in enumerate(np.load(f'../../sample-{nn}/ring_centers-{nn}_{m}_{n}.npy'))} # global hashtable mapping ring centers to integer indices
-all_lengths = np.load(f'../../sample-{nn}/ring_lengths-{nn}_{m}_{n}.npy')
+hex_pos_global = {tuple(r):k for k,r in enumerate(np.load(f'sample-{nn}/hex_centers-{nn}_{m}_{n}.npy'))} # global hashtable mapping hexagon centers to integer indices
+all_pos_global = {tuple(r):k for k,r in enumerate(np.load(f'sample-{nn}/ring_centers-{nn}_{m}_{n}.npy'))} # global hashtable mapping ring centers to integer indices
+all_lengths = np.load(f'sample-{nn}/ring_lengths-{nn}_{m}_{n}.npy')
 
-M = np.load(f'../../sample-{nn}/M_hex-{nn}_{m}_{n}.npy')
+M = np.load(f'sample-{nn}/M_hex-{nn}_{m}_{n}.npy')
 neighb_list = {k:tuple(M[k,:].nonzero()[0]) for k in range(M.shape[0])}
 
 ncentres_tot = M.shape[0]
@@ -35,7 +35,7 @@ print('Done! Commencing loop over other subsamples...',flush=True)
 for mn in slice_inds[1:]:
     m,n = mn
     print(f'\n------ {(m,n)} ------',flush=True)
-    hex_pos = np.load(f'../../sample-{nn}/hex_centers-{nn}_{m}_{n}.npy')
+    hex_pos = np.load(f'sample-{nn}/hex_centers-{nn}_{m}_{n}.npy')
     print(f'{hex_pos.shape[0]} distinct crystalline centers.', flush=True)
     local_map_hex = {k:-1 for k in range(hex_pos.shape[0])} # hashtable that maps centre indices local to the NPY being processed to their global index (i.e. in `hex_pos_global`)  
 
@@ -56,7 +56,7 @@ for mn in slice_inds[1:]:
 
     print('Loop 2: ', end='',flush=True)
     # next, update neighbour list using global hashmap
-    M = np.load(f'../../sample-{nn}/M_hex-{nn}_{m}_{n}.npy')
+    M = np.load(f'sample-{nn}/M_hex-{nn}_{m}_{n}.npy')
     for k in range(hex_pos.shape[0]):
         k_global = local_map_hex[k]
         ineighbs_local = tuple(M[:,k].nonzero()[0])
@@ -68,8 +68,8 @@ for mn in slice_inds[1:]:
     print('Done!',flush=True)
 
     print('Loop 3 (all rings): ', end='', flush=True)
-    all_pos = np.load(f'../../sample-{nn}/ring_centers-{nn}_{m}_{n}.npy')
-    lengths = np.load(f'../../sample-{nn}/ring_lengths-{nn}_{m}_{n}.npy')
+    all_pos = np.load(f'sample-{nn}/ring_centers-{nn}_{m}_{n}.npy')
+    lengths = np.load(f'sample-{nn}/ring_lengths-{nn}_{m}_{n}.npy')
     new_lengths_local = []
     for k, r in enumerate(all_pos):
         r = tuple(r)
@@ -107,12 +107,12 @@ for k in range(ncentres_tot):
 end = perf_counter()
 print(f'**** Done! [{end - start} seconds] ****\nSaving stuff.', flush=True)
 
-np.save(f'Mhex_global-{nn}.npy',Mglobal)
+np.save(f'sample-{nn}/hex_global-{nn}.npy',Mglobal)
 
-with open(f'centres_hashmap-{nn}.pkl', 'wb') as fo:
+with open(f'sample-{nn}/centres_hashmap-{nn}.pkl', 'wb') as fo:
     pickle.dump(hex_pos_global,fo)
 
-with open('neighbs_dict.pkl', 'wb') as fo:
+with open('sample-{nn}/neighbs_dict.pkl', 'wb') as fo:
     pickle.dump(neighb_list,fo)
 
 nuclei = isnucleus.nonzero()[0]
@@ -140,7 +140,7 @@ end = perf_counter()
 print(f'**** Done! Total time = {end - start} seconds. Time spent in `get_cluster` = {end - cluster_start} seconds ****',flush=True)
 
 cluster_sizes = np.array([len(c) for c in crystalline_clusters])
-np.save(f'cryst_cluster_sizes-{nn}.npy',cluster_sizes)
+np.save(f'sample-{nn}/cryst_cluster_sizes-{nn}.npy',cluster_sizes)
 
 print('Building all_centres to match order in `all_lengths`...')
 start = perf_counter()
@@ -148,10 +148,10 @@ all_centres = np.zeros((all_lengths.shape[0], 2))
 for r, k in all_pos_global.items():
     all_centres[k] = r
 end = perf_counter()
-np.save(f'all_ring_centers-{nn}.npy', all_centres)
-np.save(f'all_ring_lengths-{nn}.npy', all_lengths)
+np.save(f'sample-{nn}/all_ring_centers-{nn}.npy', all_centres)
+np.save(f'sample-{nn}/all_ring_lengths-{nn}.npy', all_lengths)
 print(f'Done! Total time = {end - start} seconds.',flush=True)
 
 
-with open(f'clusters-{nn}.pkl', 'wb') as fo:
+with open(f'sample-{nn}/clusters-{nn}.pkl', 'wb') as fo:
     pickle.dump(crystalline_clusters,fo)
