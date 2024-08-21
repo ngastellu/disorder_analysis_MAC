@@ -5,7 +5,7 @@ import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
-from qcnico.coords_io import read_xyz
+from qcnico.coords_io import read_xyz, read_xsf
 from qcnico.graph_tools import adjacency_matrix_sparse, count_rings, classify_hexagons, cycle_centers
 from qcnico.qcplots import plot_atoms, plot_atoms_w_bonds, plot_rings_MAC, size_to_clr
 from qcnico.pixel2xyz import pxl2xyz
@@ -20,7 +20,7 @@ rCC = 1.8
 # if structype == 'amc400':
 #     xyz_prefix = 'amc400-'
 
-nn = 0
+nn = 181
 
 # ddir = f'/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/plot_labelled_tdot5_structure/sample-{nn}/'
 # pos = read_xyz(f'/Users/nico/Desktop/simulation_outputs/MAC_structures/relaxed_no_dangle/{structype}/{xyz_prefix}{nn}_relaxed_no-dangle.xyz')
@@ -30,7 +30,7 @@ nn = 0
 # mm = 2
 
 # ddir = f'/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/labelled_rings/amc400/sample-{nn}/'
-ddir = f'/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/labelled_rings/ata_test_structures/'
+ddir = f'/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/labelled_rings/small_kMC_test/sample-{nn}/'
 
 # readme = ddir + 'README'
 # with open(readme) as fo:
@@ -40,10 +40,12 @@ ddir = f'/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/l
 
 # strucfile_names = [l.strip().split()[1] for l in lines]
 # strucfile = f'/Users/nico/Desktop/simulation_outputs/MAC_structures/Ata_structures/testing/{strucfile_names[nn]}'
-struc_filename = 'check_0_plainconditiondot96.npy'
-strucfile = f'/Users/nico/Desktop/simulation_outputs/MAC_structures/Ata_structures/testing/{struc_filename}'
+# struc_filename = 'check_0_plainconditiondot99.npy'
+# strucfile = f'/Users/nico/Desktop/simulation_outputs/MAC_structures/Ata_structures/testing/{struc_filename}'
+strucfile = ddir + f'sample-{nn}.xsf'
 
-pos = pxl2xyz(np.load(strucfile)[0,0,:,:],0.2)
+# pos = pxl2xyz(np.load(strucfile)[0,0,:,:],0.2)
+pos, _ = read_xsf(strucfile,read_forces=False)
 
 
 M = adjacency_matrix_sparse(pos,rCC)
@@ -74,7 +76,7 @@ print('Got cluster centres.')
 # rcParams['figure.figsize'] = [19.2,14.4]
 # rcParams['figure.figsize'] = [12.8,9.6]
 # fig, ax  = plot_atoms_w_bonds(pos,M,dotsize=4.0,show=False)
-fig, ax  = plot_atoms_w_bonds(pos,M,dotsize=0.5,show=False)
+fig, ax  = plot_atoms_w_bonds(pos,M,dotsize=10,show=False)
 print('Plotted C skeletton.')
 
 
@@ -86,20 +88,22 @@ ring_lengths[ring_lengths == 6] = -6 # label all hecagons as isolated; will fix 
 
 center_clrs = list(map(size_to_clr,ring_lengths)) 
 
-ax.scatter(*ring_centers.T, c=center_clrs, s=1.5, zorder=3)
+ax.scatter(*ring_centers.T, c=center_clrs, s=40, zorder=3)
 # ax.scatter(*ring_centers.T, c=center_clrs, s=16.0, zorder=3)
 print('Plotted ring centers, except 6c.')
 
 # Now plot crystalline clusters over the mislabeled isolated hexs
 for cc in cluster_centres:
-    ax.scatter(*cc.T,c='limegreen',s=16.0,zorder=4)
+    ax.scatter(*cc.T,c='limegreen',s=40,zorder=4)
 
 print('Plotted 6c.')
 print('Crystalline cluster sizes: ', cluster_sizes)
 
 # plt.savefig('/Users/nico/Desktop/figures_worth_saving/charge_hopping_paper_intermediate_figs/tdot5_full_structure.eps',bbox_inches='tight')
 # plt.suptitle(strucfile_names[nn] + f' \# {mm} ')
-plt.suptitle(struc_filename)
+# plt.suptitle(struc_filename)
+plt.xlim([0,20])
+plt.ylim([0,20])
 plt.show()
 
 # x_bounds = [100,190]

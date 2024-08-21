@@ -196,8 +196,8 @@ if __name__ == "__main__":
     # avgfiles =['avg_ring_counts_tempdot5_new_model_relaxed.npy','avg_ring_counts_tempdot6_new_model_relaxed.npy','avg_ring_counts_40x40.npy']
     # labels = ['sAMC-300','sAMC-q400','sAMC-500']
 
-    avgfiles =['avg_ring_counts_tempdot6_new_model_relaxed.npy','avg_ring_counts_amc400.npy']
-    labels = ['sAMC-q400', 'sAMC-400']
+    avgfiles =['ring_stats_conditiondot99.npy','ring_stats_conditiondot99_righthalf.npy']
+    labels = ['full', '$x\ge 100$\AA']
     
     # avgfiles =['avg_ring_counts_40x40.npy', 'avg_ring_counts_tempdot5_new_model_relaxed.npy']
     # labels = ['$\delta$-aG','$\chi$-aG']
@@ -208,7 +208,7 @@ if __name__ == "__main__":
     # clrs = ['darkorange', 'darkviolet', 'forestgreen']
     clrs = MAC_ensemble_colours(clr_type='two_ensembles')
     setup_tex(fontsize=20)
-    compare_ring_stats(datadir, avgfiles, labels, normalised=[False, False],title=None, fontsize=20,colors=clrs, reproduce_nature_tian=True)
+    compare_ring_stats(datadir, avgfiles, labels, normalised=[False, False],title='ring stats for conditiondot99 (full and right half)', fontsize=20,colors=clrs, reproduce_nature_tian=True)
 
     # avgfile = 'avg_ring_counts_tempdot6_new_model_relaxed.npy' 
     # plot_ring_stats(datadir,avgfile,title='Ring stats for conditional model ($T = 0.6$, $N = 132$ structures)',normalise=True)
