@@ -22,6 +22,7 @@ hex_pos_global = {tuple(r):k for k,r in enumerate(np.load(f'sample-{nn}/hex_cent
 all_pos_global = {tuple(r):k for k,r in enumerate(np.load(f'sample-{nn}/ring_centers-{nn}_{m}_{n}.npy'))} # global hashtable mapping ring centers to integer indices
 all_lengths = np.load(f'sample-{nn}/ring_lengths-{nn}_{m}_{n}.npy')
 
+
 M = np.load(f'sample-{nn}/M_hex-{nn}_{m}_{n}.npy')
 neighb_list = {k:tuple(M[k,:].nonzero()[0]) for k in range(M.shape[0])}
 
