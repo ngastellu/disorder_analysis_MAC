@@ -5,7 +5,6 @@ import pickle
 from os import path
 from glob import glob
 from qcnico.lattice import cartesian_product
-from qcnico.jitted_cluster_utils import get_clusters
 from qcnico.graph_tools import adjacency_matrix_sparse, count_rings, cycle_centers, hexagon_adjmat
 from scipy import sparse
 from time import perf_counter
@@ -136,11 +135,10 @@ def rebuild_rings(nn,datadir=None):
            determine which hexagons are crystalline
         
     This whole procedure basically removes redundant rings from overlapping subsamples and stitches the
-    hexagon network of the full structure back together using the local hexagon adjacency matrices.
-    
-    If `explicit_rings` is set to `True`, this function also creates a list of all of the rings in the structure
-    where the ring is represented by the list of the global indices of it component atoms"""
+    hexagon network of the full structure back together using the local hexagon adjacency matrices."""
 
+    from qcnico.jitted_cluster_utils import get_clusters
+    
     if datadir is None:
         datadir = f'sample-{nn}'
 
@@ -291,6 +289,8 @@ def rebuild_rings(nn,datadir=None):
 
     with open(path.join(datadir, f'clusters-{nn}.pkl', 'wb')) as fo:
         pickle.dump(crystalline_clusters,fo)
+
+
 
 def crystalline_atoms(full_pos, nn,datadir=None):
     """Generates a mask `m` filtering which atoms in a given structure which belong to a crystalline cluster from the 
