@@ -210,5 +210,5 @@ if __name__ == "__main__":
     setup_tex(fontsize=20)
     compare_ring_stats(datadir, avgfiles, labels, normalised=[False, False],title='ring stats for conditiondot99 (full and right half)', fontsize=20,colors=clrs, reproduce_nature_tian=True)
 
-    # avgfile = 'avg_ring_counts_tempdot6_new_model_relaxed.npy' 
-    # plot_ring_stats(datadir,avgfile,title='Ring stats for conditional model ($T = 0.6$, $N = 132$ structures)',normalise=True)
+    avgfile = 'ring_stats_labelleddata_condition3biggernew.npy' 
+    plot_ring_stats(datadir,avgfile,title='Ring stats for labelleddata_condition3biggernew)',normalise=True)

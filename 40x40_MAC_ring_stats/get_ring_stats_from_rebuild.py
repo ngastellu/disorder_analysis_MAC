@@ -71,13 +71,12 @@ def ring_stats_rebuild(datadir, xlim=np.array([-np.inf,np.inf]), ylim=np.array([
 
 
 
-nn = 181
-datadir = f'/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/labelled_rings/small_kMC_test/sample-{nn}/'
+system_name = 'labelleddata_condition3biggernew'
+ringstats_dir = '/Users/nico/Desktop/simulation_outputs/ring_stats_40x40_pCNN_MAC/'
+datadir = '/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/labelled_rings/ata_test_structures/sample-2/'
+nn = 0
+ring_stats = ring_stats_rebuild(datadir,nn=nn)
+# print(ring_stats)
+ring_stats /= ring_stats.sum()
 
-# system_name = 'conditiondot99'
-# ringstats_dir = '/Users/nico/Desktop/simulation_outputs/ring_stats_40x40_pCNN_MAC/'
-ring_stats = ring_stats_rebuild(datadir,nn=nn,xlim=(-np.inf,20),ylim=(-np.inf,20))
-print(ring_stats)
-# ring_stats /= ring_stats.sum()
-
-# np.save(ringstats_dir + f'ring_stats_{system_name}_righthalf.npy', ring_stats)
+np.save(ringstats_dir + f'ring_stats_{system_name}.npy', ring_stats)

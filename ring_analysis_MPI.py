@@ -69,8 +69,8 @@ def get_rings_from_subsamp(full_pos,nprocs,rank, nn, save_explicit_rings=True, m
     a = int(a)
 
 
-    Lx = np.max(pos[:,0]) - np.min(pos[:,0])
-    Ly = np.max(pos[:,1]) - np.min(pos[:,1])
+    Lx = np.max(full_pos[:,0]) - np.min(full_pos[:,0])
+    Ly = np.max(full_pos[:,1]) - np.min(full_pos[:,1])
     L = np.max(np.ceil([Lx,Ly]))
     l = L // (a+1) # I did the math, this ensures a proper partitioning of the structure into nprocs subsamples
 
@@ -83,7 +83,7 @@ def get_rings_from_subsamp(full_pos,nprocs,rank, nn, save_explicit_rings=True, m
     else:
         pos = subsample_MAC_half_step(full_pos,l,m,n,a-1,a-1,return_global_indices=False)
 
-    np.save(path.join(outdir,f'pos_sample-{nn}_{m}_{n}.npy', pos))
+    np.save(path.join(outdir,f'pos_sample-{nn}_{m}_{n}.npy'),pos)
 
     rCC = 1.8
 
@@ -95,17 +95,17 @@ def get_rings_from_subsamp(full_pos,nprocs,rank, nn, save_explicit_rings=True, m
     hex_centers = cycle_centers(hexs, pos)
     Mhex = hexagon_adjmat(hexs)
 
-    np.save(path.join(outdir,f'M_hex-{nn}_{m}_{n}.npy', Mhex))
-    np.save(path.join(outdir,f'M_atoms-{nn}_{m}_{n}.npy', M))
-    np.save(path.join(outdir,f'hex_centers-{nn}_{m}_{n}.npy', hex_centers))
-    np.save(path.join(outdir,f'ring_centers-{nn}_{m}_{n}.npy', ring_centers))
-    np.save(path.join(outdir,f'ring_lengths-{nn}_{m}_{n}.npy', ring_lengths))
+    np.save(path.join(outdir,f'M_hex-{nn}_{m}_{n}.npy'), Mhex)
+    np.save(path.join(outdir,f'M_atoms-{nn}_{m}_{n}.npy'), M)
+    np.save(path.join(outdir,f'hex_centers-{nn}_{m}_{n}.npy'), hex_centers)
+    np.save(path.join(outdir,f'ring_centers-{nn}_{m}_{n}.npy'), ring_centers)
+    np.save(path.join(outdir,f'ring_lengths-{nn}_{m}_{n}.npy'), ring_lengths)
 
     if save_explicit_rings:
         rings_global = [[iatoms[i] for i in c] for c in rings] #list of all rings in subsample with globally indexed atoms
         hexs_global = np.array([[iatoms[i] for i in h] for h in hexs]) #list of hexagons in subsamp with globally indexed atoms
 
-        with open(path.join(outdir, f'cycles-{nn}_{m}_{n}.pkl',outdir, 'wb')) as fo:
+        with open(path.join(outdir, f'cycles-{nn}_{m}_{n}.pkl'),outdir, 'wb') as fo:
             pickle.dump(rings_global, fo)
 
        # save hexs separately because this will make my life easier to determine 
@@ -135,10 +135,13 @@ def rebuild_rings(nn,datadir=None):
            determine which hexagons are crystalline
         
     This whole procedure basically removes redundant rings from overlapping subsamples and stitches the
-    hexagon network of the full structure back together using the local hexagon adjacency matrices."""
+    hexagon network of the full structure back together using the local hexagon adjacency matrices.
+    
+    If `explicit_rings` is set to `True`, this function also creates a list of all of the rings in the structure
+    where the ring is represented by the list of the global indices of it component atoms"""
 
     from qcnico.jitted_cluster_utils import get_clusters
-    
+
     if datadir is None:
         datadir = f'sample-{nn}'
 
@@ -153,10 +156,10 @@ def rebuild_rings(nn,datadir=None):
     print(f'Initialising hash maps (m,n) = ({m,n})',flush=True)
     hex_pos_global = {tuple(r):k for k,r in enumerate(np.load(path.join(datadir,f'hex_centers-{nn}_{m}_{n}.npy')))} # global hashtable mapping hexagon centers to integer indices
     all_pos_global = {tuple(r):k for k,r in enumerate(np.load(path.join(datadir,f'ring_centers-{nn}_{m}_{n}.npy')))} # global hashtable mapping ring centers to integer indices
-    all_lengths = np.load(path.join(f'ring_lengths-{nn}_{m}_{n}.npy'))
+    all_lengths = np.load(path.join(datadir, f'ring_lengths-{nn}_{m}_{n}.npy'))
 
 
-    M = np.load(path.join(f'M_hex-{nn}_{m}_{n}.npy'))
+    M = np.load(path.join(datadir, f'M_hex-{nn}_{m}_{n}.npy'))
     neighb_list = {k:tuple(M[k,:].nonzero()[0]) for k in range(M.shape[0])}
 
     ncentres_tot = M.shape[0]
@@ -169,7 +172,7 @@ def rebuild_rings(nn,datadir=None):
     for mn in slice_inds[1:]:
         m,n = mn
         print(f'\n------ {(m,n)} ------',flush=True)
-        hex_pos = np.load(path.join(f'hex_centers-{nn}_{m}_{n}.npy'))
+        hex_pos = np.load(path.join(datadir, f'hex_centers-{nn}_{m}_{n}.npy'))
         print(f'{hex_pos.shape[0]} distinct crystalline centers.', flush=True)
         local_map_hex = {k:-1 for k in range(hex_pos.shape[0])} # hashtable that maps centre indices local to the NPY being processed to their global index (i.e. in `hex_pos_global`)  
 
@@ -241,12 +244,12 @@ def rebuild_rings(nn,datadir=None):
     end = perf_counter()
     print(f'**** Done! [{end - start} seconds] ****\nSaving stuff.', flush=True)
 
-    np.save(path.join(datadir, f'hex_global-{nn}.npy',Mglobal))
+    np.save(path.join(datadir, f'hex_global-{nn}.npy'),Mglobal)
 
-    with open(path.join(datadir, f'centres_hashmap-{nn}.pkl', 'wb')) as fo:
+    with open(path.join(datadir, f'centres_hashmap-{nn}.pkl'), 'wb') as fo:
         pickle.dump(hex_pos_global,fo)
 
-    with open(path.join(datadir, f'neighbs_dict-{nn}.pkl', 'wb')) as fo:
+    with open(path.join(datadir, f'neighbs_dict-{nn}.pkl'), 'wb') as fo:
         pickle.dump(neighb_list,fo)
 
     nuclei = isnucleus.nonzero()[0]
@@ -274,7 +277,7 @@ def rebuild_rings(nn,datadir=None):
     print(f'**** Done! Total time = {end - start} seconds. Time spent in `get_cluster` = {end - cluster_start} seconds ****',flush=True)
 
     cluster_sizes = np.array([len(c) for c in crystalline_clusters])
-    np.save(f'sample-{nn}/cryst_cluster_sizes-{nn}.npy',cluster_sizes)
+    np.save(path.join(datadir, f'cryst_cluster_sizes-{nn}.npy'),cluster_sizes)
 
     print('Building all_centres to match order in `all_lengths`...')
     start = perf_counter()
@@ -282,15 +285,13 @@ def rebuild_rings(nn,datadir=None):
     for r, k in all_pos_global.items():
         all_centres[k] = r
     end = perf_counter()
-    np.save(path.join(datadir, f'all_ring_centers-{nn}.npy', all_centres))
-    np.save(path.join(datadir, f'all_ring_lengths-{nn}.npy', all_lengths))
+    np.save(path.join(datadir, f'all_ring_centers-{nn}.npy'), all_centres)
+    np.save(path.join(datadir, f'all_ring_lengths-{nn}.npy'), all_lengths)
     print(f'Done! Total time = {end - start} seconds.',flush=True)
 
 
-    with open(path.join(datadir, f'clusters-{nn}.pkl', 'wb')) as fo:
+    with open(path.join(datadir, f'clusters-{nn}.pkl'), 'wb') as fo:
         pickle.dump(crystalline_clusters,fo)
-
-
 
 def crystalline_atoms(full_pos, nn,datadir=None):
     """Generates a mask `m` filtering which atoms in a given structure which belong to a crystalline cluster from the 
