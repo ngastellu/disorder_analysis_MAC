@@ -45,7 +45,7 @@ def subsample_MAC_half_step(pos,l,m,n,m_max,n_max,return_global_indices=False):
     else:
         return pos[mask,:]
 
-def get_rings_from_subsamp(full_pos,nprocs,rank, nn, save_explicit_rings=True, max_ring_size=7,outdir='.'):
+def get_rings_from_subsamp(full_pos,nprocs,rank, nn, save_explicit_rings=True, max_ring_size=8,outdir='.'):
 
     """This is a driver function which runs the MPI-parallelised ring analysis code for a given structure.
     Given a number of MPI jobs `nprocs` (which HAS to be a perfect square), it determines the size of the subsamples,
@@ -105,7 +105,7 @@ def get_rings_from_subsamp(full_pos,nprocs,rank, nn, save_explicit_rings=True, m
         rings_global = [[iatoms[i] for i in c] for c in rings] #list of all rings in subsample with globally indexed atoms
         hexs_global = np.array([[iatoms[i] for i in h] for h in hexs]) #list of hexagons in subsamp with globally indexed atoms
 
-        with open(path.join(outdir, f'cycles-{nn}_{m}_{n}.pkl'),outdir, 'wb') as fo:
+        with open(path.join(outdir, f'cycles-{nn}_{m}_{n}.pkl'), 'wb') as fo:
             pickle.dump(rings_global, fo)
 
        # save hexs separately because this will make my life easier to determine 
@@ -118,8 +118,8 @@ def get_a(datadir, nn):
     analysis job (i.e. variable `a` from `get_rings_from_subsamp`), using the number of 'M_hex' files.
     Assumes that all of the output files are formated as 'M_hex-nn_m_n.npy'."""
 
-    Mhex_files = glob(path.join(datadir, f'Mhex-{nn}_*.npy'))
-    nvals = list(map(int, [f.split('.')[0].split('_')[-1] for f in Mhex_files]))
+    Mhex_files = glob(path.join(datadir, f'M_hex-{nn}_*.npy'))
+    nvals = [int(f.split('.')[0].split('_')[-1]) for f in Mhex_files]
     return max(nvals) + 1
 
 
@@ -290,7 +290,7 @@ def rebuild_rings(nn,datadir=None):
     print(f'Done! Total time = {end - start} seconds.',flush=True)
 
 
-    with open(path.join(datadir, f'clusters-{nn}.pkl'), 'wb') as fo:
+    with open(path.join(datadir, f'clusters-{nn}.pkl'), 'wb')    as fo:
         pickle.dump(crystalline_clusters,fo)
 
 def crystalline_atoms(full_pos, nn,datadir=None):
