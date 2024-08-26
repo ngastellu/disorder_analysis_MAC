@@ -119,7 +119,7 @@ def get_a(datadir, nn):
     Assumes that all of the output files are formated as 'M_hex-nn_m_n.npy'."""
 
     Mhex_files = glob(path.join(datadir, f'M_hex-{nn}_*.npy'))
-    nvals = [int(f.split('.')[0].split('_')[-1]) for f in Mhex_files]
+    nvals = [int(f.split('_')[-1].split('.')[0]) for f in Mhex_files]
     return max(nvals) + 1
 
 
@@ -327,7 +327,7 @@ def crystalline_atoms(full_pos, nn,datadir=None):
     slice_inds = cartesian_product(np.arange(a),np.arange(a))
 
     for mn in slice_inds:
-        m,n = slice_inds
+        m,n = mn
         local_hex_centres = np.load(path.join(datadir, f'hex_centers-{nn}_{m}_{n}.npy'))
         local_hex_atoms = np.load(path.join(datadir, f'hexs-{nn}_{m}_{n}.npy'))
         for k,r in local_hex_centres:

@@ -32,7 +32,7 @@ def match_order_params(etas_dat, rhos_dat, selected_inds = None):
 selected_inds = np.load('/Users/nico/Desktop/scripts/disorder_analysis_MAC/new_AMC400_selected_indices.npy')
 print(selected_inds.shape)
 eta_volker = np.load('/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/MRO_param/eta_MRO_volker_full_data_rmax10.npy')[:,1]
-rho_volker = np.load('/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/rho_sites/rho_sites_volker_training_set.npy')
+rho_volker = np.load('/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/rho_sites/rho_sites_volker_training_set.npy') * 100
 
 # eta_volker, rho_volker = match_order_params(eta_volker,rho_volker,selected_inds=selected_inds)
 
@@ -63,6 +63,6 @@ ax.scatter(eta_volker_sel, rho_volker_sel,s=1.0,c='r',alpha=0.7,zorder=2,label='
 ax.scatter(eta_avg_training, rho_avg_training, marker='*', s=100.0, facecolor='r',edgecolor='k',lw=1.0,zorder=3,label='training set avg')
 ax.scatter(eta_target, rho_target, marker='*', s=100.0, facecolor='limegreen', edgecolor='k',lw=1.0,zorder=3,label='sAMC-q400 avg')
 ax.set_xlabel("$\eta'_{\\text{MRO}}$")
-ax.set_ylabel("$\\rho'_{\\text{sites}}$ [nm$^{-2}$]")
+ax.set_ylabel("$\\rho_{\\text{sites}}$ [nm$^{-2}$]")
 ax.legend()
 plt.show()
