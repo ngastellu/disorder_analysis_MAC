@@ -15,21 +15,22 @@ from qcnico.pixel2xyz import pxl2xyz
 
 rCC = 1.8
 
-# structype = 'amc400'
+structype = 'amc300'
 
-# if structype == 'amc400':
-#     xyz_prefix = 'amc400-'
+if structype == 'amc300':
+    xyz_prefix = 'amc300-'
 
-nn = 0
+nn = 12
 
 # ddir = f'/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/plot_labelled_tdot5_structure/sample-{nn}/'
 # pos = read_xyz(f'/Users/nico/Desktop/simulation_outputs/MAC_structures/relaxed_no_dangle/{structype}/{xyz_prefix}{nn}_relaxed_no-dangle.xyz')
-# pos = pos[:,:2]
+pos = read_xyz('/Users/nico/Desktop/scripts/disorder_analysis_MAC/structures/sAMC-300/sAMC300-12.xyz')
+pos = pos[:,:2]
 
 # nn = 3
 # mm = 2
 
-# ddir = f'/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/labelled_rings/amc400/sample-{nn}/'
+ddir = f'/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/labelled_rings/amc300/sample-{nn}/'
 # ddir = f'/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/labelled_rings/small_kMC_test/sample-{nn}/'
 
 # readme = ddir + 'README'
@@ -40,12 +41,12 @@ nn = 0
 
 # strucfile_names = [l.strip().split()[1] for l in lines]
 # strucfile = f'/Users/nico/Desktop/simulation_outputs/MAC_structures/Ata_structures/testing/{strucfile_names[nn]}'
-ddir = f'/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/labelled_rings/ata_test_structures/sample-2/'
-struc_filename = 'labelleddata_condition3biggernew.npy'
-strucfile = f'/Users/nico/Desktop/simulation_outputs/MAC_structures/Ata_structures/testing/{struc_filename}'
+# ddir = f'/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/labelled_rings/ata_test_structures/sample-2/'
+# struc_filename = 'labelleddata_condition3biggernew.npy'
+# strucfile = f'/Users/nico/Desktop/simulation_outputs/MAC_structures/Ata_structures/testing/{struc_filename}'
 # strucfile = ddir + f'sample-{nn}.xsf'
 
-pos = pxl2xyz(np.load(strucfile)[0,0,:,:],0.2)
+# pos = pxl2xyz(np.load(strucfile)[0,0,:,:],0.2)
 # pos, _ = read_xsf(strucfile,read_forces=False)
 
 
@@ -74,10 +75,16 @@ cluster_centres = [np.array([hex_centres[i] for i in c]) for c in cryst_clusters
 print('Got cluster centres.')
 
 
+cryst_mask = np.load('/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/crystalline_masks/tempdot5/crystalline_atoms_mask-12.npy')
+
 # rcParams['figure.figsize'] = [19.2,14.4]
 # rcParams['figure.figsize'] = [12.8,9.6]
 # fig, ax  = plot_atoms_w_bonds(pos,M,dotsize=4.0,show=False)
-fig, ax  = plot_atoms_w_bonds(pos,M,dotsize=2,show=False)
+clrs = ['black']*pos.shape[0]
+for i in range(len(clrs)):
+    if cryst_mask[i]:
+        clrs[i] = 'darkorchid'
+fig, ax  = plot_atoms_w_bonds(pos,M,dotsize=0.4,show=False,colour=clrs)
 print('Plotted C skeletton.')
 
 
@@ -89,13 +96,13 @@ ring_lengths[ring_lengths == 6] = -6 # label all hecagons as isolated; will fix 
 
 center_clrs = list(map(size_to_clr,ring_lengths)) 
 
-ax.scatter(*ring_centers.T, c=center_clrs, s=10, zorder=3)
+ax.scatter(*ring_centers.T, c=center_clrs, s=2, zorder=3)
 # ax.scatter(*ring_centers.T, c=center_clrs, s=16.0, zorder=3)
 print('Plotted ring centers, except 6c.')
 
 # Now plot crystalline clusters over the mislabeled isolated hexs
 for cc in cluster_centres:
-    ax.scatter(*cc.T,c='limegreen',s=10,zorder=4)
+    ax.scatter(*cc.T,c='limegreen',s=2,zorder=4)
 
 print('Plotted 6c.')
 print('Crystalline cluster sizes: ', cluster_sizes)

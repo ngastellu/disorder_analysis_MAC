@@ -330,7 +330,7 @@ def crystalline_atoms(full_pos, nn,datadir=None):
         m,n = mn
         local_hex_centres = np.load(path.join(datadir, f'hex_centers-{nn}_{m}_{n}.npy'))
         local_hex_atoms = np.load(path.join(datadir, f'hexs-{nn}_{m}_{n}.npy'))
-        for k,r in local_hex_centres:
+        for k,r in enumerate(local_hex_centres):
             r = tuple(r)
             if r in cryst_centres:
                 icryst = local_hex_atoms[k]

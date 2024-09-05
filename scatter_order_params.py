@@ -10,10 +10,10 @@ from qcnico.plt_utils import setup_tex, MAC_ensemble_colours
 ddir_rho = '/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/rho_sites/'
 ddir_eta = '/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/MRO_param/'
 
-structypes = ['40x40', 'tempdot6', 'amc400', 'amc400_new', 'tempdot5']
-labels = ['sAMC-500', 'sAMC-q400', 'sAMC-400b', 'sAMC-400c', 'sAMC-300']
+structypes = ['40x40', 'tempdot6', 'amc400', 'tempdot5', 'amc400_subsample', 'T1']
+labels = ['sAMC-500', 'sAMC-q400', 'sAMC-400b', 'sAMC-300', 'sAMC-400b (50x50 subsample)', 'T1']
 # clrs = MAC_ensemble_colours()
-clrs = ['#008744', '#0057e7', '#d62d20', '#ff5e00' , '#ffa700']
+clrs = ['#008744', '#0057e7', '#d62d20', '#ff5e00' , '#ffa700', '#20c9d6']
 
 # structypes = ['40x40', 'tempdot5']
 # labels = ['$\delta$-aG','$\chi$-aG']
