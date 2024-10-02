@@ -18,19 +18,25 @@ rCC = 1.8
 structype = 'amc300'
 
 if structype == 'amc300':
-    xyz_prefix = 'amc300-'
+    xyz_prefix = 'sAMC300-'
+    unofficial_structype = 'tempdot5'
+    strucdir = 'sAMC-300'
+elif structype == 'amc500':
+    xyz_prefix = 'sAMC500-'
+    unofficial_structype = '40x40'
+    strucdir='sAMC-500'
 
-nn = 12
+nn = 99
 
 # ddir = f'/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/plot_labelled_tdot5_structure/sample-{nn}/'
 # pos = read_xyz(f'/Users/nico/Desktop/simulation_outputs/MAC_structures/relaxed_no_dangle/{structype}/{xyz_prefix}{nn}_relaxed_no-dangle.xyz')
-pos = read_xyz('/Users/nico/Desktop/scripts/disorder_analysis_MAC/structures/sAMC-300/sAMC300-12.xyz')
+pos = read_xyz(f'/Users/nico/Desktop/scripts/disorder_analysis_MAC/structures/{strucdir}/{xyz_prefix}{nn}.xyz')
 pos = pos[:,:2]
 
 # nn = 3
 # mm = 2
 
-ddir = f'/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/labelled_rings/amc300/sample-{nn}/'
+ddir = f'/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/labelled_rings/{structype}/sample-{nn}/'
 # ddir = f'/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/labelled_rings/small_kMC_test/sample-{nn}/'
 
 # readme = ddir + 'README'
@@ -75,16 +81,16 @@ cluster_centres = [np.array([hex_centres[i] for i in c]) for c in cryst_clusters
 print('Got cluster centres.')
 
 
-cryst_mask = np.load('/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/crystalline_masks/tempdot5/crystalline_atoms_mask-12.npy')
+# cryst_mask = np.load(f'/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/crystalline_masks/{unofficial_structype}/crystalline_atoms_mask-{nn}.npy')
 
 # rcParams['figure.figsize'] = [19.2,14.4]
 # rcParams['figure.figsize'] = [12.8,9.6]
 # fig, ax  = plot_atoms_w_bonds(pos,M,dotsize=4.0,show=False)
 clrs = ['black']*pos.shape[0]
-for i in range(len(clrs)):
-    if cryst_mask[i]:
-        clrs[i] = 'darkorchid'
-fig, ax  = plot_atoms_w_bonds(pos,M,dotsize=0.4,show=False,colour=clrs)
+# for i in range(len(clrs)):
+#     if cryst_mask[i]:
+#         clrs[i] = 'darkorchid'
+fig, ax  = plot_atoms_w_bonds(pos,M,dotsize=1.0,show=False,colour=clrs)
 print('Plotted C skeletton.')
 
 
@@ -113,32 +119,3 @@ print('Crystalline cluster sizes: ', cluster_sizes)
 # plt.xlim([0,20])
 # plt.ylim([0,20])
 plt.show()
-
-# x_bounds = [100,190]
-# y_bounds = [30,120]
-
-# pos = pos[(pos[:,0] >= x_bounds[0]) * (pos[:,0] <= x_bounds[1]) * (pos[:,1] >= y_bounds[0]) * (pos[:,1] <= y_bounds[1])]
-
-
-
-# rCC = 1.8
-# M = adjacency_matrix_sparse(pos,rCC)
-# ring_data, cycles = count_rings(pos,rCC,max_size=10,return_cycles=True,distinguish_hexagons=True)
-# ring_cntrs = cycle_centers(cycles, pos)
-# print(ring_data)
-
-# # atom_lbls = label_atoms(pos,cycles,ring_data,distinguish_hexagons=True)
-# # print(atom_lbls)
-
-# ring_sizes = np.array([len(c) for c in cycles])
-# hex_inds = (ring_sizes == 6).nonzero()[0]
-# hexs = np.array([c for c in cycles if len(c) == 6])
-# i6, c6 = classify_hexagons(hexs)
-# i6 = list(i6)
-# iso_inds = hex_inds[i6]
-# ring_sizes[iso_inds] *= -1
-
-
-# rcParams['figure.figsize'] = [12.8,9.6]
-# plot_rings_MAC(pos,M,ring_sizes,ring_cntrs,atom_labels=None,dotsize_atoms=5.0,dotsize_centers=50.0,show=True)
-# # plt.savefig('labelled_conditionedp6dot9.png',bbox_inches='tight')
