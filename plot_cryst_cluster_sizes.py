@@ -21,7 +21,7 @@ sizes_tempdot6 = np.hstack([np.load(f) for f in npys]) # * area
 npys = glob('/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/crystallite_sizes/40x40/*npy')
 sizes_pCNN = np.hstack([np.load(f) for f in npys]) # * area
 
-setup_tex(fontsize=40)
+setup_tex(fontsize=80)
 
 # multiple_histograms((sizes_pCNN,sizes_tempdot6,sizes_tempdot5),('PixelCNN','$\\tilde{T} = 0.6$','$\\tilde{T} = 0.5$'),nbins=200,xlabel='Area [\AA$^2$]',log_counts=True)
 
@@ -38,27 +38,29 @@ clrs = MAC_ensemble_colours()
 
 
 
-rcParams['font.size'] = 50
+# rcParams['font.size'] = 50
 rcParams['figure.figsize'] = [12.8,9.6]
 fig, axs = plt.subplots(len(sizes),1)
 
 for s, l, c, ax in zip(sizes, labels, clrs, axs):
-    fig, ax = histogram(s,nbins=80,xlabel='',log_counts=True,show=False,plt_objs=(fig,ax),plt_kwargs={'color':c, 'label':l},usetex=False)
+    fig, ax = histogram(s,bins=80,xlabel='',log_counts=True,show=False,plt_objs=(fig,ax),plt_kwargs={'color':c, 'label':l},usetex=False)
     ax.legend()
-    ax.tick_params('both',length=7.0,width=1.5,labelsize=37)
+    ax.tick_params('both',length=7.0,width=1.5)#,labelsize=37)
+    # ax.set_box_aspect(1)
     # ax.tick_params('x',length=5.0,width=1.0,labelsize=37)
 
 # axs[-1].set_xlabel('Area [\AA$^2$]')
-axs[-1].set_xlabel('Crystallite size [nb. of hexagons]')
+axs[-1].set_xlabel('Crystallite size [\# hexagons]')
+# fig.set_box_aspect(1)
 
 # plt.suptitle('Distribution of crystallite sizes')
 plt.show()
 
 
-print('Max radius for tempdot5 = ', np.sqrt(np.max(sizes_tempdot5)/np.pi))
-# print('Max radius for tempdot6 = ', np.sqrt(np.max(sizes_tempdot6)/np.pi))
-print('Max radius for PixelCNN = ', np.sqrt(np.max(sizes_pCNN)/np.pi))
+print('Max radius for tempdot5 = ', np.sqrt(np.max(sizes_tempdot5)*area/np.pi))
+print('Max radius for tempdot6 = ', np.sqrt(np.max(sizes_tempdot6)*area/np.pi))
+print('Max radius for PixelCNN = ', np.sqrt(np.max(sizes_pCNN)*area/np.pi))
 
-print('Mean radius for tempdot5 = ', np.sqrt(np.mean(sizes_tempdot5)/np.pi))
-# print('Mean radius for tempdot6 = ', np.sqrt(np.mean(sizes_tempdot6)/np.pi))
-print('Mean radius for PixelCNN = ', np.sqrt(np.mean(sizes_pCNN)/np.pi))
+# print('Mean radius for tempdot5 = ', np.sqrt(np.mean(sizes_tempdot5)/np.pi))
+# # print('Mean radius for tempdot6 = ', np.sqrt(np.mean(sizes_tempdot6)/np.pi))
+# print('Mean radius for PixelCNN = ', np.sqrt(np.mean(sizes_pCNN)/np.pi))

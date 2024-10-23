@@ -53,7 +53,7 @@ eta_target = np.mean(eta_sAMC400)
 rho_target = np.mean(rho_sites_sAMC400)
 
 
-setup_tex()
+setup_tex(fontsize=85)
 
 fig, ax = plt.subplots()
 

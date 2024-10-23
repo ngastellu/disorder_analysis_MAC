@@ -10,16 +10,18 @@ from qcnico.plt_utils import setup_tex, MAC_ensemble_colours
 ddir_rho = '/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/rho_sites/'
 ddir_eta = '/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/MRO_param/'
 
-structypes = ['40x40', 'tempdot6', 'amc400', 'tempdot5', 'amc400_subsample', 'T1']
-labels = ['sAMC-500', 'sAMC-q400', 'sAMC-400b', 'sAMC-300', 'sAMC-400b (50x50 subsample)', 'T1']
-# clrs = MAC_ensemble_colours()
-clrs = ['#008744', '#0057e7', '#d62d20', '#ff5e00' , '#ffa700', '#20c9d6']
+# structypes = ['40x40', 'tempdot6', 'amc400', 'tempdot5', 'amc400_subsample', 'T1']
+structypes = ['40x40', 'tempdot6','tempdot5']
+labels = ['sAMC-500', 'sAMC-q400', 'sAMC-300']
+clrs = MAC_ensemble_colours()
+# clrs = ['#008744', '#0057e7', '#d62d20', '#ff5e00' , '#ffa700', '#20c9d6']
 
 # structypes = ['40x40', 'tempdot5']
 # labels = ['$\delta$-aG','$\chi$-aG']
 # clrs = MAC_ensemble_colours('two_ensembles')
 
-setup_tex(fontsize=20)
+fontsize=80
+setup_tex(fontsize=fontsize)
 
 fig, ax = plt.subplots()
 # rcParams['font.size'] = 40
@@ -44,15 +46,15 @@ for st, lbl, c in zip(structypes,labels,clrs):
         scat_dat[k,0] = eta
         scat_dat[k,1] = rho
     
-    ax.scatter(*scat_dat[:-1].T,s=70.0,c=c,alpha=0.7,zorder=1)
-    ax.scatter(*scat_dat[-1].T,s=70.0,c=c,alpha=0.5,zorder=1)
-    ax.scatter(*np.mean(scat_dat,axis=0).T,s=320.0,marker='*',c=c,zorder=2,edgecolor='k',lw=1.5,label=lbl)
+    ax.scatter(*scat_dat[:-1].T,s=100.0,c=c,alpha=0.7,zorder=1)
+    ax.scatter(*scat_dat[-1].T,s=100.0,c=c,alpha=0.5,zorder=1)
+    ax.scatter(*np.mean(scat_dat,axis=0).T,s=500.0,marker='*',c=c,zorder=2,edgecolor='k',lw=1.5,label=lbl)
     print(*np.mean(scat_dat,axis=0))
 
 # ax.scatter(1/1600,0,s=320.0,marker='*',c='#8018ff',edgecolor='k',lw=1.5,label='graphene')
 ax.scatter(1/1600,0,s=320.0,marker='*',c='#1897ff',edgecolor='k',lw=1.5,label='graphene')
-ax.set_xlabel('$\log\eta_{\\text{MRO}}$',fontsize=20)
-ax.set_ylabel('$\\rho_{\\text{sites}}$ [nm$^{-2}$]',fontsize=20)
+ax.set_xlabel('$\log\eta_{\\text{MRO}}$',fontsize=fontsize)
+ax.set_ylabel('$\\rho_{\\text{sites}}$ [nm$^{-2}$]',fontsize=fontsize)
 ax.legend()
 plt.show()
 

@@ -193,22 +193,25 @@ if __name__ == "__main__":
 
     datadir = '/Users/nico/Desktop/simulation_outputs/ring_stats_40x40_pCNN_MAC/'
 
-    # avgfiles =['avg_ring_counts_tempdot5_new_model_relaxed.npy','avg_ring_counts_tempdot6_new_model_relaxed.npy','avg_ring_counts_40x40.npy']
-    # labels = ['sAMC-300','sAMC-q400','sAMC-500']
+    avgfiles =['avg_ring_counts_tempdot5_new_model_relaxed.npy','avg_ring_counts_tempdot6_new_model_relaxed.npy','avg_ring_counts_40x40.npy']
+    labels = ['sAMC-300','sAMC-q400','sAMC-500']
 
-    avgfiles =['ring_stats_conditiondot99.npy','ring_stats_conditiondot99_righthalf.npy']
-    labels = ['full', '$x\ge 100$\AA']
-    
+    # avgfiles =['ring_stats_conditiondot99.npy','ring_stats_conditiondot99_righthalf.npy']
+    # labels = ['full', '$x\ge 100$\AA']
+    # 
     # avgfiles =['avg_ring_counts_40x40.npy', 'avg_ring_counts_tempdot5_new_model_relaxed.npy']
     # labels = ['$\delta$-aG','$\chi$-aG']
 
     # labels = ['full structures', 'first $6\,\\text{nm}\\times6\,\\text{nm}$', 'last $6\,\\text{nm}\\times6\,\\text{nm}$']
     # title = 'Ring stats for conditional model ($T = 1$, $N = 101$ structures)'
 
-    # clrs = ['darkorange', 'darkviolet', 'forestgreen']
-    clrs = MAC_ensemble_colours(clr_type='two_ensembles')
-    setup_tex(fontsize=20)
-    compare_ring_stats(datadir, avgfiles, labels, normalised=[False, False],title='ring stats for conditiondot99 (full and right half)', fontsize=20,colors=clrs, reproduce_nature_tian=True)
+    clrs = ['darkorange', 'darkviolet', 'forestgreen']
+    # clrs = MAC_ensemble_colours(clr_type='two_ensembles')
+    fontsize=80
+    setup_tex(fontsize=fontsize)
 
-    avgfile = 'ring_stats_labelleddata_condition3biggernew.npy' 
-    plot_ring_stats(datadir,avgfile,title='Ring stats for labelleddata_condition3biggernew)',normalise=True)
+    # compare_ring_stats(datadir, avgfiles, labels, normalised=[False, False],title='ring stats for conditiondot99 (full and right half)', fontsize=20,colors=clrs, reproduce_nature_tian=True)
+    compare_ring_stats(datadir, avgfiles, labels, normalised=[False, False,False], fontsize=fontsize,colors=clrs, reproduce_nature_tian=True)
+
+    # avgfile = 'ring_stats_labelleddata_condition3biggernew.npy' 
+    # plot_ring_stats(datadir,avgfile,title='Ring stats for labelleddata_condition3biggernew)',normalise=True)

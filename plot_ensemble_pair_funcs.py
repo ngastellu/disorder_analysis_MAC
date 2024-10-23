@@ -20,11 +20,11 @@ print(pair_func_graphene.shape)
 # clrs = MAC_ensemble_colours(clr_type='two_ensembles')
 clrs = MAC_ensemble_colours()
 
-setup_tex(fontsize=40)
+setup_tex(fontsize=90)
 
 fig,ax = plt.subplots()
 # rcParams['font.size'] = 40
-rcParams['figure.figsize'] = [12.8,9.6]
+# rcParams['figure.figsize'] = [12.8,9.6]
 # ax.plot(radii, pair_func_pCNN, c=clrs[0],label='$\delta$-aG',lw=2.5 ,zorder=2)
 # ax.plot(radii, pair_func_pCNN, c='#5ca904',label='sAMC-500',lw=2.5 ,zorder=4)
 ax.plot(radii, pair_func_pCNN, c='limegreen',label='sAMC-500',lw=2.5 ,zorder=4)
