@@ -12,11 +12,11 @@ if structype == '40x40':
 else:
     split_str = 'n'
 
-lbls = [int(f.split(split_str)[1].split('_')[0]) for f in glob(f'{strucdir}/*.xyz')]
+lbls = [int(f.split('/')[-1].split(split_str)[1].split('_')[0]) for f in glob(f'{strucdir}/*.xyz')]
 
 lbls_sorted = sorted(lbls)
 
-fo = open('old2new_lbls.txt', 'r')
+fo = open('old2new_lbls.txt', 'w')
 fo.write('This file keeps track of which new file index corresponds to which old file index.\n\n')
 fo.write('old ---> new\n')
 
