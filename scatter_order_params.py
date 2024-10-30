@@ -20,7 +20,7 @@ clrs = MAC_ensemble_colours()
 # labels = ['$\delta$-aG','$\chi$-aG']
 # clrs = MAC_ensemble_colours('two_ensembles')
 
-fontsize=80
+fontsize=20
 setup_tex(fontsize=fontsize)
 
 fig, ax = plt.subplots()
