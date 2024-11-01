@@ -17,7 +17,7 @@ lbls = [int(f.split('/')[-1].split(split_str)[1].split('_')[0]) for f in glob(f'
 lbls_sorted = sorted(lbls)
 
 fo = open('old2new_lbls.txt', 'w')
-fo.write('This file keeps track of which new file index corresponds to which old file index.\n\n')
+fo.write('This file keeps track of which new file index corresponds to which old file index in `relaxed_structures_no_dangle`.\n\n')
 fo.write('old ---> new\n')
 
 for k, n in enumerate(lbls_sorted):
