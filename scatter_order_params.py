@@ -11,9 +11,9 @@ ddir_rho = '/Users/nico/Desktop/simulation_outputs/structural_characteristics_MA
 ddir_eta = '/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/MRO_param/'
 
 # structypes = ['40x40', 'tempdot6', 'amc400', 'tempdot5', 'amc400_subsample', 'T1']
-structypes = ['40x40', 'tempdot6', 'tempdot5', 'equil_tempdot6','equil_tempdot5']
-labels = ['sAMC-500', 'sAMC-q400', 'sAMC-300',  'sAMC-q400 (equil)', 'sAMC-300 (equil)']
-clrs = MAC_ensemble_colours() + ['#3d02c5', '#ff6a04']
+structypes = ['40x40', 'equil_tempdot6','equil_tempdot5']
+labels = ['sAMC-500',  'sAMC-q400 (equil)', 'sAMC-300 (equil)']
+clrs = [MAC_ensemble_colours()[0], '#3d02c5', '#ff6a04']
 # clrs = ['#008744', '#0057e7', '#d62d20', '#ff5e00' , '#ffa700', '#20c9d6']
 
 # structypes = ['40x40', 'tempdot5']
