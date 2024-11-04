@@ -301,7 +301,7 @@ def ring_stats_rebuild(datadir, xlim=np.array([-np.inf,np.inf]), ylim=np.array([
 
     all_ring_lengths = np.load(path.join(datadir, rl_filename))
 
-    ring_lengths = np.arange(3,9) 
+    ring_lengths = np.arange(3,10) 
     ring_stats = np.zeros(ring_lengths.shape[0] + 1) # add one slot to accomodate for 6i/6c distinction
 
     with open(path.join(datadir + cluster_filename), 'rb') as fo:
