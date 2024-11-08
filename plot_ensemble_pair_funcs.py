@@ -20,9 +20,16 @@ print(pair_func_graphene.shape)
 # clrs = MAC_ensemble_colours(clr_type='two_ensembles')
 clrs = MAC_ensemble_colours()
 
-setup_tex(fontsize=90)
+# setup_tex(fontsize=90)
+fontsize = 45
+fontsize_axes = 55
+rcParams['font.size'] = fontsize # define font size BEFORE instantiating figure
+rcParams['figure.figsize'] = [6,5.7]
+rcParams['mathtext.fontset'] = 'cm'
+rcParams['font.family'] = 'sans-serif'
 
-fig,ax = plt.subplots()
+fig, ax = plt.subplots()
+fig.subplots_adjust(bottom=0.185,top=0.99,left=0.17,right=0.885)
 # rcParams['font.size'] = 40
 # rcParams['figure.figsize'] =   [12.8,9.6]
 # ax.plot(radii, pair_func_pCNN, c=clrs[0],label='$\delta$-aG',lw=2.5 ,zorder=2)
@@ -35,8 +42,8 @@ ax.plot(radii, pair_func_tempdot5, c=clrs[2],label='sAMC-300',lw=2.5   ,zorder=2
 # ax.plot(radii_graphene, pair_func_graphene,c='#8018ff',label='graphene',lw=2.5  ,zorder=1)
 ax.plot(radii_graphene, pair_func_graphene,c='#1897ff',label='graphene',lw=2.0  ,zorder=1)
 ax.set_xlim([0,12])
-ax.set_xlabel('Pair distance $r$ [\AA]')
-ax.set_ylabel('Pair correlation function $g(r)$')
+ax.set_xlabel('Pair distance $r$ [$\mathsf{\AA}$]',fontsize=fontsize_axes)
+ax.set_ylabel('$g(r)$',fontsize=fontsize_axes)
 
-plt.legend()
-plt.show()
+plt.legend(framealpha=1.0)
+plt.show()  

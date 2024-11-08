@@ -7,10 +7,14 @@ from qcnico.plt_utils import setup_tex, MAC_ensemble_colours
 
 
 def compare_ring_stats(datadir,avg_files,labels,std_files=None,normalised=None, distinguished_hexagons=True,
-                        colors=None, usetex=True, plt_objs=None, show=True, title=None, fontsize=20, reproduce_nature_tian=False):
+                        colors=None, usetex=True, plt_objs=None, show=True, title=None, fontsize=20, fontsize_axes=20, reproduce_nature_tian=False):
     """Creates bar plot with ring distributions contained in the files in `avg_files`."""
 
-    avgs = np.array([np.load(datadir+avgf) for avgf in avg_files])
+    # avgs = np.array([np.load(datadir+avgf) for avgf in avg_files])
+    avgs = [np.load(datadir+avgf) for avgf in avg_files]
+    min_len = min([dat.shape[0] for dat in avgs])
+    avgs = np.array([avg[:min_len] for avg in avgs]) #deal with uneven array lenghts 
+
     show_errorbars = False
     if std_files is not None:
         print('List of stderr files detected: skipping normalisation.')
@@ -34,10 +38,12 @@ def compare_ring_stats(datadir,avg_files,labels,std_files=None,normalised=None, 
         avgs_copy = np.copy(avgs)
         avgs = avgs_copy[:,:6]
         avgs[:,5] += avgs_copy[:,6] # last entry will contain proportion of 7- and 8-membered rings
+        avgs = avgs[:,2:] # omit triangles and squares
         
     
     avgs *= 100.0
     print(avgs)
+
 
     if plt_objs is None:
         fig, ax = plt.subplots()
@@ -81,7 +87,7 @@ def compare_ring_stats(datadir,avg_files,labels,std_files=None,normalised=None, 
         
         for y, lbl, c in zip(avgs, labels, colors):
             offset = dx * multiplier
-            ax.bar(x+offset, y, width=dx,label=lbl, color=c, edgecolor='k', lw=1.2)
+            ax.bar(x+offset, y, width=dx,label=lbl, color=c, edgecolor='k', lw=4.0)
             multiplier += 1
             print(f'{lbl}: {y*100}')
             print(y[-4:].sum())
@@ -99,27 +105,29 @@ def compare_ring_stats(datadir,avg_files,labels,std_files=None,normalised=None, 
 
                 multiplier += 1
 
-    ax.set_xlabel('Ring types',fontsize=fontsize)
+    ax.set_xlabel('Ring types',fontsize=fontsize_axes)
     ax.tick_params(axis='y', labelsize=fontsize)
     
     if distinguished_hexagons:
-        ax.set_xticks(x+dx, ['3', '4', '5', '6-c', '6-i'] + [str(n) for n in range(7,nrings+2)],fontsize=fontsize)
+        if reproduce_nature_tian:
+            ax.set_xticks(x+dx, [str(5), str(6) + '-c', str(6) + '-i',str(7) + '/' + str(8)],fontsize=fontsize)
+        else:
+            ax.set_xticks(x+dx, ['3', '4', '5', '6-c', '6-i'] + [str(n) for n in range(7,nrings+2)],fontsize=fontsize)
     else:
         ax.set_xticks(x+dx, [str(n) for n in range(3,nrings+3)],fontsize=fontsize)
     
-    if reproduce_nature_tian:
-        ax.set_xticks(x+dx, [str(3), str(4), str(5), str(6) + '-c', str(6) + '-i',str(7) + '/' + str(8)],fontsize=fontsize)
     
+    ax.tick_params(axis='both', length=10, width=2.5)
+
     if normalised is not None:
-        ax.set_ylabel('Percentage (\%)',fontsize=fontsize)
+        ax.set_ylabel('Percentage (%)',fontsize=fontsize_axes)
     else:
-        ax.set_ylabel('Average count',fontsize=fontsize)
+        ax.set_ylabel('Average count',fontsize=fontsize_axes)
 
     if title is not None:
         ax.set_title(title,fontsize=fontsize)
 
     plt.legend()
-    
 
     if show:
         plt.show()
@@ -174,6 +182,7 @@ def plot_ring_stats(datadir,avg_file,std_file=None,normalise=True, distinguished
     else:
         ax.set_xticks(x, [str(n) for n in range(3,nrings+3)])
     
+    
     if normalise:
         ax.set_ylabel('Average count (normalised)')
     else:
@@ -193,25 +202,23 @@ if __name__ == "__main__":
 
     datadir = '/Users/nico/Desktop/simulation_outputs/ring_stats_40x40_pCNN_MAC/'
 
-    avgfiles =['avg_ring_counts_tempdot5_new_model_relaxed.npy','avg_ring_counts_tempdot6_new_model_relaxed.npy','avg_ring_counts_40x40.npy']
+    avgfiles =['avg_ring_counts_tempdot5_MROfiltered.npy','avg_ring_counts_tempdot6_MROfiltered.npy','avg_ring_counts_40x40.npy']
+    # labels = ['equil', 'both', 'vanilla']
     labels = ['sAMC-300','sAMC-q400','sAMC-500']
 
-    # avgfiles =['ring_stats_conditiondot99.npy','ring_stats_conditiondot99_righthalf.npy']
-    # labels = ['full', '$x\ge 100$\AA']
-    # 
-    # avgfiles =['avg_ring_counts_40x40.npy', 'avg_ring_counts_tempdot5_new_model_relaxed.npy']
-    # labels = ['$\delta$-aG','$\chi$-aG']
-
-    # labels = ['full structures', 'first $6\,\\text{nm}\\times6\,\\text{nm}$', 'last $6\,\\text{nm}\\times6\,\\text{nm}$']
-    # title = 'Ring stats for conditional model ($T = 1$, $N = 101$ structures)'
 
     clrs = ['darkorange', 'darkviolet', 'forestgreen']
     # clrs = MAC_ensemble_colours(clr_type='two_ensembles')
-    fontsize=80
-    setup_tex(fontsize=fontsize)
+    # clrs += ['#4cc94b']
+    fontsize = 45
+    fontsize_axes = 55
+    rcParams['font.size'] = fontsize # define font size BEFORE instantiating figure
+    rcParams['figure.figsize'] = [6,5.7]
+    rcParams['mathtext.fontset'] = 'cm'
+    rcParams['font.family'] = 'sans-serif'
 
-    # compare_ring_stats(datadir, avgfiles, labels, normalised=[False, False],title='ring stats for conditiondot99 (full and right half)', fontsize=20,colors=clrs, reproduce_nature_tian=True)
-    compare_ring_stats(datadir, avgfiles, labels, normalised=[False, False,False], fontsize=fontsize,colors=clrs, reproduce_nature_tian=True)
+    fig, ax = plt.subplots()
+    fig.subplots_adjust(bottom=0.185,top=0.99,left=0.17,right=0.885)
 
-    # avgfile = 'ring_stats_labelleddata_condition3biggernew.npy' 
-    # plot_ring_stats(datadir,avgfile,title='Ring stats for labelleddata_condition3biggernew)',normalise=True)
+
+    compare_ring_stats(datadir, avgfiles, labels, normalised=[False, False, False], fontsize=fontsize,fontsize_axes=fontsize_axes,colors=clrs, reproduce_nature_tian=True,plt_objs=(fig,ax))

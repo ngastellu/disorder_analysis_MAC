@@ -4,7 +4,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
 from glob import glob
-from qcnico.plt_utils import multiple_histograms, histogram, setup_tex, get_cm, MAC_ensemble_colours
+import os
+from qcnico.plt_utils import multiple_histograms, histogram, MAC_ensemble_colours
+
+
+def load_filtered_data(datadir, prefix, ifiltered):
+    dat = np.hstack([np.load(os.path.join(datadir,f'{prefix}{n}.npy')) for n in ifiltered])
+    return dat
 
 
 a = 1.42 # edge length of crystalline hexagon
@@ -12,16 +18,17 @@ area = 3 * np.sqrt(3) * a * a / 2
 
 
 
-npys = glob('/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/crystallite_sizes/tempdot5/*npy')
-sizes_tempdot5 = np.hstack([np.load(f) for f in npys]) # * area
+datadir = '/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/crystallite_sizes/tempdot5/'
+ifiltered_tempdot5 = np.load('/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/ifiltered_MRO_tempdot5.npy')
+sizes_tempdot5 = load_filtered_data(datadir, 'cryst_cluster_sizes-', ifiltered_tempdot5)
 
-npys = glob('/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/crystallite_sizes/tempdot6/*npy')
-sizes_tempdot6 = np.hstack([np.load(f) for f in npys]) # * area
+datadir = '/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/crystallite_sizes/tempdot6/'
+ifiltered_tempdot6 = np.load('/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/ifiltered_MRO_tempdot6.npy')
+sizes_tempdot6 = load_filtered_data(datadir, 'cryst_cluster_sizes-', ifiltered_tempdot6)
 
 npys = glob('/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/crystallite_sizes/40x40/*npy')
 sizes_pCNN = np.hstack([np.load(f) for f in npys]) # * area
 
-setup_tex(fontsize=80)
 
 # multiple_histograms((sizes_pCNN,sizes_tempdot6,sizes_tempdot5),('PixelCNN','$\\tilde{T} = 0.6$','$\\tilde{T} = 0.5$'),nbins=200,xlabel='Area [\AA$^2$]',log_counts=True)
 
@@ -39,21 +46,34 @@ clrs = MAC_ensemble_colours()
 
 
 # rcParams['font.size'] = 50
-rcParams['figure.figsize'] = [12.8,9.6]
-fig, axs = plt.subplots(len(sizes),1)
+# rcParams['figure.figsize'] = [12.8,9.6]
 
-for s, l, c, ax in zip(sizes, labels, clrs, axs):
-    fig, ax = histogram(s,bins=80,xlabel='',log_counts=True,show=False,plt_objs=(fig,ax),plt_kwargs={'color':c, 'label':l},usetex=False)
-    ax.legend()
+fontsize = 45
+fontsize_axes = 55
+rcParams['font.size'] = fontsize # define font size BEFORE instantiating figure
+# rcParams['figure.figsize'] = [6,5.7]
+rcParams['mathtext.fontset'] = 'cm'
+rcParams['font.family'] = 'sans-serif'
+fig, axs = plt.subplots(len(sizes),1,sharey=True)
+fig.subplots_adjust(bottom=0.185,top=0.99,left=0.17,right=0.885,hspace=0.39)
+
+for k, s, l, c, ax in zip(range(len(sizes)),sizes, labels, clrs, axs):
+    if k == 1:
+        ylabel= 'Counts (log)'
+    else:
+        ylabel = ' '
+    fig, ax = histogram(s,bins=80,xlabel='',ylabel=ylabel,log_counts=True,show=False,plt_objs=(fig,ax),plt_kwargs={'color':c, 'label':l},usetex=False)
+    # ax.legend()
     ax.tick_params('both',length=7.0,width=1.5)#,labelsize=37)
     # ax.set_box_aspect(1)
     # ax.tick_params('x',length=5.0,width=1.0,labelsize=37)
 
 # axs[-1].set_xlabel('Area [\AA$^2$]')
-axs[-1].set_xlabel('Crystallite size [\# hexagons]')
+axs[-1].set_xlabel('Crystallite size [# hexagons]')
 # fig.set_box_aspect(1)
 
 # plt.suptitle('Distribution of crystallite sizes')
+plt.tight_layout()
 plt.show()
 
 
