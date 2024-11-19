@@ -22,14 +22,14 @@ clrs = MAC_ensemble_colours()
 
 # setup_tex(fontsize=90)
 fontsize = 45
-fontsize_axes = 55
+fontsize_axes = 60
 rcParams['font.size'] = fontsize # define font size BEFORE instantiating figure
 rcParams['figure.figsize'] = [6,5.7]
 rcParams['mathtext.fontset'] = 'cm'
 rcParams['font.family'] = 'sans-serif'
 
 fig, ax = plt.subplots()
-fig.subplots_adjust(bottom=0.185,top=0.99,left=0.17,right=0.885)
+fig.subplots_adjust(bottom=0.1889,top=0.999,left=0.17,right=0.885)
 # rcParams['font.size'] = 40
 # rcParams['figure.figsize'] =   [12.8,9.6]
 # ax.plot(radii, pair_func_pCNN, c=clrs[0],label='$\delta$-aG',lw=2.5 ,zorder=2)

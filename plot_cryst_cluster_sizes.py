@@ -49,7 +49,7 @@ clrs = MAC_ensemble_colours()
 # rcParams['figure.figsize'] = [12.8,9.6]
 
 fontsize = 45
-fontsize_axes = 55
+fontsize_axes = 60
 rcParams['font.size'] = fontsize # define font size BEFORE instantiating figure
 # rcParams['figure.figsize'] = [6,5.7]
 rcParams['mathtext.fontset'] = 'cm'
@@ -62,14 +62,14 @@ for k, s, l, c, ax in zip(range(len(sizes)),sizes, labels, clrs, axs):
         ylabel= 'Counts (log)'
     else:
         ylabel = ' '
-    fig, ax = histogram(s,bins=80,xlabel='',ylabel=ylabel,log_counts=True,show=False,plt_objs=(fig,ax),plt_kwargs={'color':c, 'label':l},usetex=False)
+    fig, ax = histogram(s,bins=80,xlabel='',ylabel=ylabel,log_counts=True,show=False,plt_objs=(fig,ax),plt_kwargs={'color':c, 'label':l},usetex=False,y_axis_fontsize=fontsize_axes)
     # ax.legend()
     ax.tick_params('both',length=7.0,width=1.5)#,labelsize=37)
     # ax.set_box_aspect(1)
     # ax.tick_params('x',length=5.0,width=1.0,labelsize=37)
 
 # axs[-1].set_xlabel('Area [\AA$^2$]')
-axs[-1].set_xlabel('Crystallite size [# hexagons]')
+axs[-1].set_xlabel('Crystallite size [# hexagons]',fontsize=fontsize_axes)
 # fig.set_box_aspect(1)
 
 # plt.suptitle('Distribution of crystallite sizes')

@@ -211,7 +211,7 @@ if __name__ == "__main__":
     # clrs = MAC_ensemble_colours(clr_type='two_ensembles')
     # clrs += ['#4cc94b']
     fontsize = 45
-    fontsize_axes = 55
+    fontsize_axes = 63
     rcParams['font.size'] = fontsize # define font size BEFORE instantiating figure
     rcParams['figure.figsize'] = [6,5.7]
     rcParams['mathtext.fontset'] = 'cm'
