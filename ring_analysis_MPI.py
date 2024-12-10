@@ -45,7 +45,8 @@ def subsample_MAC_half_step(pos,l,m,n,m_max,n_max,return_global_indices=False):
     else:
         return pos[mask,:]
 
-def get_rings_from_subsamp(full_pos,nprocs,rank, nn, save_explicit_rings=True, max_ring_size=8,outdir='.'):
+    
+def get_rings_from_subsamp(full_pos,nprocs,rank, nn, save_explicit_rings=True, max_ring_size=8,outdir='.',save_hexs_only=False):
 
     """This is a driver function which runs the MPI-parallelised ring analysis code for a given structure.
     Given a number of MPI jobs `nprocs` (which HAS to be a perfect square), it determines the size of the subsamples,
@@ -56,7 +57,14 @@ def get_rings_from_subsamp(full_pos,nprocs,rank, nn, save_explicit_rings=True, m
     indices of its component atoms) as pickled list.
     
     The variable `nn` is basically just a label, useful to differentiate outputs from different structures if multiple 
-    structures are stored in the same file (i.e. mupltiple Ata test structures in the same NPY)."""
+    structures are stored in the same file (i.e. mupltiple Ata test structures in the same NPY).
+
+    Kwarg `save_hexs_only` has been added to re-generate MPI-segmented hexagon lists that I deleted ('^^) but need to construct the 
+    crystallinity masks. It avoids writing all of the other output files that this function would otherwise generate and thus
+    potentially making me reach my file quota."""
+
+    if save_hexs_only:
+        print('!!!!! WARNING !!!!!\n`save_hexs_only` kwarg has been set to True; `get_rings_from_subsamp` will not write many of the files necessary to rebuild the rings from this MPI-segmented run.')
     
     full_pos = full_pos[:,:2]
 
@@ -83,7 +91,8 @@ def get_rings_from_subsamp(full_pos,nprocs,rank, nn, save_explicit_rings=True, m
     else:
         pos = subsample_MAC_half_step(full_pos,l,m,n,a-1,a-1,return_global_indices=False)
 
-    np.save(path.join(outdir,f'pos_sample-{nn}_{m}_{n}.npy'),pos)
+    if not save_hexs_only:
+        np.save(path.join(outdir,f'pos_sample-{nn}_{m}_{n}.npy'),pos)
 
     rCC = 1.8
 
@@ -95,33 +104,35 @@ def get_rings_from_subsamp(full_pos,nprocs,rank, nn, save_explicit_rings=True, m
     hex_centers = cycle_centers(hexs, pos)
     Mhex = hexagon_adjmat(hexs)
 
-    np.save(path.join(outdir,f'M_hex-{nn}_{m}_{n}.npy'), Mhex)
-    np.save(path.join(outdir,f'M_atoms-{nn}_{m}_{n}.npy'), M)
+    if not save_hexs_only:
+        np.save(path.join(outdir,f'M_hex-{nn}_{m}_{n}.npy'), Mhex)
+        np.save(path.join(outdir,f'M_atoms-{nn}_{m}_{n}.npy'), M)
+        np.save(path.join(outdir,f'ring_centers-{nn}_{m}_{n}.npy'), ring_centers)
+        np.save(path.join(outdir,f'ring_lengths-{nn}_{m}_{n}.npy'), ring_lengths)
     np.save(path.join(outdir,f'hex_centers-{nn}_{m}_{n}.npy'), hex_centers)
-    np.save(path.join(outdir,f'ring_centers-{nn}_{m}_{n}.npy'), ring_centers)
-    np.save(path.join(outdir,f'ring_lengths-{nn}_{m}_{n}.npy'), ring_lengths)
 
     if save_explicit_rings:
         rings_global = [[iatoms[i] for i in c] for c in rings] #list of all rings in subsample with globally indexed atoms
         hexs_global = np.array([[iatoms[i] for i in h] for h in hexs]) #list of hexagons in subsamp with globally indexed atoms
 
-        with open(path.join(outdir, f'cycles-{nn}_{m}_{n}.pkl'), 'wb') as fo:
-            pickle.dump(rings_global, fo)
+        if not save_hexs_only:
+            with open(path.join(outdir, f'cycles-{nn}_{m}_{n}.pkl'), 'wb') as fo:
+                pickle.dump(rings_global, fo)
 
        # save hexs separately because this will make my life easier to determine 
        # which atoms are in crystalline clusters 
         np.save(path.join(outdir, f'hexs-{nn}_{m}_{n}.npy'), hexs_global)
-    
 
-def get_a(datadir, nn):
+        
+def get_a(datadir, nn, prefix='M_hex'):
     """Estimates the number of paritions along one direction from the output of an MPI-parallelised ring
-    analysis job (i.e. variable `a` from `get_rings_from_subsamp`), using the number of 'M_hex' files.
-    Assumes that all of the output files are formated as 'M_hex-nn_m_n.npy'."""
+    analysis job (i.e. variable `a` from `get_rings_from_subsamp`), using the number of 'M_hex' files by default.
+    Assumes that all of the output files are formated as 'M_hex-nn_m_n.npy'.
+    Another set of files can be used (other than 'Mhex') if prefix is changed."""
 
-    Mhex_files = glob(path.join(datadir, f'M_hex-{nn}_*.npy'))
-    nvals = [int(f.split('_')[-1].split('.')[0]) for f in Mhex_files]
+    ref_files = glob(path.join(datadir, f'{prefix}-{nn}_*.npy'))
+    nvals = [int(f.split('_')[-1].split('.')[0]) for f in ref_files]
     return max(nvals) + 1
-
 
 
 def rebuild_rings(nn,datadir=None):
