@@ -57,9 +57,9 @@ cryst_mask = np.load(f'/Users/nico/Desktop/simulation_outputs/structural_charact
 # rcParams['figure.figsize'] = [12.8,9.6]
 # fig, ax  = plot_atoms_w_bonds(pos,M,dotsize=4.0,show=False)
 full_clrs = ['black']*pos.shape[0]
-for i in range(len(full_clrs)):
-    if cryst_mask[i]:
-        full_clrs[i] = 'darkorchid'
+# for i in range(len(full_clrs)):
+#     if cryst_mask[i]:
+#         full_clrs[i] = 'darkorchid'
 print('Plotted C skeletton.')
 
 
@@ -69,8 +69,8 @@ ring_centers = np.load(ddir + f'all_ring_centers-{nn}.npy')
 
 ring_lengths[ring_lengths == 6] = -6 # label all hecagons as isolated; will fix this over-assignment later
 
-x_bounds = np.array([100,150])
-y_bounds = np.array([200,250])
+x_bounds = np.array([100,155])
+y_bounds = np.array([200,255])
 
 pos_filter = (pos[:,0] >= x_bounds[0]) * (pos[:,0] <= x_bounds[1]) * (pos[:,1] >= y_bounds[0]) * (pos[:,1] <= y_bounds[1])
 pos = pos[pos_filter]
@@ -89,16 +89,18 @@ center_clrs = list(map(size_to_clr,ring_lengths))
 
 
 
+# ax.scatter(*ring_centers.T, c=center_clrs, s=300, zorder=3)
 ax.scatter(*ring_centers.T, c=center_clrs, s=300, zorder=3)
-# ax.scatter(*ring_centers.T, c=center_clrs, s=16.0, zorder=3)
 print('Plotted ring centers, except 6c.')
 
 # Now plot crystalline clusters over the mislabeled isolated hexs
 for cc in cluster_centres:
     ax.scatter(*cc.T,c='limegreen',s=300,zorder=4)
 
-x_bounds_plot = np.array([110,135])
-y_bounds_plot = np.array([210,235])
+# x_bounds_plot = np.array([110,135])
+# y_bounds_plot = np.array([210,235])
+x_bounds_plot = np.array([110,150])
+y_bounds_plot = np.array([210,250])
 ax.set_xlim(x_bounds_plot)
 ax.set_ylim(y_bounds_plot)
 
