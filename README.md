@@ -1,3 +1,5 @@
+# Disorder Analysis of sAMC structures
+
 This repository contains all of the code used to characterize and quantify the degree of structural disorder in the amorphous monolayer carbon (AMC) structures discussed in the following paper: https://arxiv.org/abs/2411.18041.
 
 The file `structures/` also contains all of the structures (stored as XYZ files) used in the paper. 
