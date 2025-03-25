@@ -15,14 +15,21 @@ from qcnico.pixel2xyz import pxl2xyz
 
 rCC = 1.8
 
-structype = 'amc300'
+synthtemp = '500'
+xyz_prefix =  f'sAMC{synthtemp}-'
+structype = f'amc{synthtemp}' 
 
-if structype == 'amc300':
-    xyz_prefix = 'sAMC300-'
+if synthtemp == '300':
     unofficial_structype = 'tempdot5'
+elif synthtemp == 'q400':
+    structype = f'amc400' 
+    unofficial_structype = 'tempdot6'
+else:
+    unofficial_structype = '40x40'
 
-nn = 13
-pos = read_xyz(f'/Users/nico/Desktop/scripts/disorder_analysis_MAC/structures/sAMC-300/{xyz_prefix}{nn}.xyz')
+
+nn = 42
+pos = read_xyz(f'/Users/nico/Desktop/scripts/disorder_analysis_MAC/structures/sAMC-{synthtemp}/{xyz_prefix}{nn}.xyz')
 pos = pos[:,:2]
 
 
@@ -51,7 +58,7 @@ cluster_centres = [np.array([hex_centres[i] for i in c]) for c in cryst_clusters
 print('Got cluster centres.')
 
 
-cryst_mask = np.load(f'/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/crystalline_masks/{unofficial_structype}/crystalline_atoms_mask-{nn}.npy')
+# cryst_mask = np.load(f'/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/crystalline_masks/{unofficial_structype}/crystalline_atoms_mask-{nn}.npy')
 
 # rcParams['figure.figsize'] = [19.2,14.4]
 # rcParams['figure.figsize'] = [12.8,9.6]
@@ -69,8 +76,8 @@ ring_centers = np.load(ddir + f'all_ring_centers-{nn}.npy')
 
 ring_lengths[ring_lengths == 6] = -6 # label all hecagons as isolated; will fix this over-assignment later
 
-x_bounds = np.array([100,155])
-y_bounds = np.array([200,255])
+x_bounds = np.array([100,275])
+y_bounds = np.array([10,185])
 
 pos_filter = (pos[:,0] >= x_bounds[0]) * (pos[:,0] <= x_bounds[1]) * (pos[:,1] >= y_bounds[0]) * (pos[:,1] <= y_bounds[1])
 pos = pos[pos_filter]
@@ -78,7 +85,8 @@ clrs = [full_clrs[k] for k in pos_filter.nonzero()[0]]
 
 
 M = adjacency_matrix_sparse(pos,rCC)
-fig, ax  = plot_atoms_w_bonds(pos,M,dotsize=40.0,show=False,colour=clrs, bond_lw=2.0)
+fig, ax  = plot_atoms_w_bonds(pos,M,dotsize=60.0,show=False,colour=clrs, bond_lw=2.0,zorder_bonds=10,zorder_atoms=10)
+# fig, ax  = plot_atoms_w_bonds(pos,M,dotsize=10.0,show=False,colour=clrs, bond_lw=0.8,zorder_bonds=10,zorder_atoms=10)
 
 centers_filter = (ring_centers[:,0] >= x_bounds[0]) * (ring_centers[:,0] <= x_bounds[1]) * (ring_centers[:,1] >= y_bounds[0]) * (ring_centers[:,1] <= y_bounds[1])
 ring_centers = ring_centers[centers_filter]
@@ -89,18 +97,19 @@ center_clrs = list(map(size_to_clr,ring_lengths))
 
 
 
-# ax.scatter(*ring_centers.T, c=center_clrs, s=300, zorder=3)
-ax.scatter(*ring_centers.T, c=center_clrs, s=300, zorder=3)
+# ax.scatter(*ring_centers.T, c=center_clrs, s=100, zorder=3)
+ax.scatter(*ring_centers.T, c=center_clrs, s=800, zorder=3)
 print('Plotted ring centers, except 6c.')
 
 # Now plot crystalline clusters over the mislabeled isolated hexs
 for cc in cluster_centres:
-    ax.scatter(*cc.T,c='limegreen',s=300,zorder=4)
+    # ax.scatter(*cc.T,c='limegreen',s=100,zorder=4)
+    ax.scatter(*cc.T,c='limegreen',s=1500,zorder=4)
 
 # x_bounds_plot = np.array([110,135])
 # y_bounds_plot = np.array([210,235])
-x_bounds_plot = np.array([110,150])
-y_bounds_plot = np.array([210,250])
+x_bounds_plot = np.array([150,180])
+y_bounds_plot = np.array([140,170])
 ax.set_xlim(x_bounds_plot)
 ax.set_ylim(y_bounds_plot)
 

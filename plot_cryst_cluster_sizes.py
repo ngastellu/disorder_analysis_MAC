@@ -59,7 +59,7 @@ fig.subplots_adjust(bottom=0.185,top=0.99,left=0.17,right=0.885,hspace=0.39)
 
 for k, s, l, c, ax in zip(range(len(sizes)),sizes, labels, clrs, axs):
     if k == 1:
-        ylabel= 'Counts (log)'
+        ylabel= 'log(Counts)'
     else:
         ylabel = ' '
     fig, ax = histogram(s,bins=80,xlabel='',ylabel=ylabel,log_counts=True,show=False,plt_objs=(fig,ax),plt_kwargs={'color':c, 'label':l},usetex=False,y_axis_fontsize=fontsize_axes)

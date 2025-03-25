@@ -26,7 +26,7 @@ elif structype == 'amc500':
     unofficial_structype = '40x40'
     strucdir='sAMC-500'
 
-nn = 13
+nn = 10
 
 # ddir = f'/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/plot_labelled_tdot5_structure/sample-{nn}/'
 # pos = read_xyz(f'/Users/nico/Desktop/simulation_outputs/MAC_structures/relaxed_no_dangle/{structype}/{xyz_prefix}{nn}_relaxed_no-dangle.xyz')
@@ -85,13 +85,13 @@ print('Got cluster centres.')
 
 # rcParams['figure.figsize'] = [19.2,14.4]
 # rcParams['figure.figsize'] = [12.8,9.6]
-rcParams['figure.dpi'] = 300
+# rcParams['figure.dpi'] = 300
 # fig, ax  = plot_atoms_w_bonds(pos,M,dotsize=4.0,show=False)
 clrs = ['black']*pos.shape[0]
 # for i in range(len(clrs)):
 #     if cryst_mask[i]:
 #         clrs[i] = 'darkorchid'
-fig, ax  = plot_atoms_w_bonds(pos,M,dotsize=0.8,show=False,colour=clrs,bond_lw=0.9)
+fig, ax  = plot_atoms_w_bonds(pos,M,dotsize=0.8,show=False,colour=clrs,bond_lw=0.9,zorder_atoms=10,zorder_bonds=10)
 print('Plotted C skeletton.')
 
 
@@ -103,13 +103,13 @@ ring_lengths[ring_lengths == 6] = -6 # label all hecagons as isolated; will fix 
 
 center_clrs = list(map(size_to_clr,ring_lengths)) 
 
-ax.scatter(*ring_centers.T, c=center_clrs, s=0.85, zorder=3)
+ax.scatter(*ring_centers.T, c=center_clrs, s=8, zorder=3)
 # ax.scatter(*ring_centers.T, c=center_clrs, s=16.0, zorder=3)
 print('Plotted ring centers, except 6c.')
 
 # Now plot crystalline clusters over the mislabeled isolated hexs
 for cc in cluster_centres:
-    ax.scatter(*cc.T,c='limegreen',s=0.85,zorder=4)
+    ax.scatter(*cc.T,c='limegreen',s=8,zorder=4)
 
 print('Plotted 6c.')
 print('Crystalline cluster sizes: ', cluster_sizes)
