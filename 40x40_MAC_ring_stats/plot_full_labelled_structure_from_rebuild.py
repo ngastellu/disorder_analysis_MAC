@@ -26,44 +26,34 @@ elif structype == 'amc500':
     unofficial_structype = '40x40'
     strucdir='sAMC-500'
 
-nn = 10
+nn = 0
+run_name = 'newparamamorphous_graphenetdot0.9'
 
-# ddir = f'/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/plot_labelled_tdot5_structure/sample-{nn}/'
-# pos = read_xyz(f'/Users/nico/Desktop/simulation_outputs/MAC_structures/relaxed_no_dangle/{structype}/{xyz_prefix}{nn}_relaxed_no-dangle.xyz')
-pos = read_xyz(f'/Users/nico/Desktop/scripts/disorder_analysis_MAC/structures/{strucdir}/{xyz_prefix}{nn}.xyz')
+
+pxls = np.load(f'/Users/nico/Desktop/simulation_outputs/equivariant_MAC/ata_new_batch_2025-06-23/{run_name}.npy')[nn,0,:,:]
+pos = pxl2xyz(pxls,pixel2angstroms=0.2)
 pos = pos[:,:2]
 
 # nn = 3
 # mm = 2
 
-ddir = f'/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/labelled_rings/{structype}/sample-{nn}/'
-# ddir = f'/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/labelled_rings/small_kMC_test/sample-{nn}/'
-
-# readme = ddir + 'README'
-# with open(readme) as fo:
-#     lines = fo.readlines()
-
-# ddir += f'sample-{nn}/'
-
-# strucfile_names = [l.strip().split()[1] for l in lines]
-# strucfile = f'/Users/nico/Desktop/simulation_outputs/MAC_structures/Ata_structures/testing/{strucfile_names[nn]}'
-# ddir = f'/Users/nico/Desktop/simulation_outputs/structural_characteristics_MAC/labelled_rings/ata_test_structures/sample-2/'
-# struc_filename = 'labelleddata_condition3biggernew.npy'
-# strucfile = f'/Users/nico/Desktop/simulation_outputs/MAC_structures/Ata_structures/testing/{struc_filename}'
-# strucfile = ddir + f'sample-{nn}.xsf'
-
-# pos = pxl2xyz(np.load(strucfile)[0,0,:,:],0.2)
-# pos, _ = read_xsf(strucfile,read_forces=False)
-
+ddir = f'/Users/nico/Desktop/simulation_outputs/equivariant_MAC/labelled_rings/ata_new_batch_2025-06-23/{run_name}/'
 
 M = adjacency_matrix_sparse(pos,rCC)
 
 print(f'Got M.')
 
-with open(ddir + f'clusters-{nn}.pkl', 'rb') as fo: 
-    cryst_clusters = pickle.load(fo)
 
-cluster_sizes = [len(c) for c in cryst_clusters]
+try:
+    with open(ddir + f'clusters-{nn}.pkl', 'rb') as fo: 
+        cryst_clusters = pickle.load(fo)
+
+    cluster_sizes = [len(c) for c in cryst_clusters]
+
+except FileNotFoundError as e:
+    print(e)
+    cryst_clusters = []
+    cluster_sizes = []
 
 
 
@@ -91,7 +81,7 @@ clrs = ['black']*pos.shape[0]
 # for i in range(len(clrs)):
 #     if cryst_mask[i]:
 #         clrs[i] = 'darkorchid'
-fig, ax  = plot_atoms_w_bonds(pos,M,dotsize=0.8,show=False,colour=clrs,bond_lw=0.9,zorder_atoms=10,zorder_bonds=10)
+fig, ax  = plot_atoms_w_bonds(pos,M,dotsize=0.3,show=False,colour=clrs,bond_lw=0.3,zorder_atoms=10,zorder_bonds=10)
 print('Plotted C skeletton.')
 
 
@@ -113,6 +103,7 @@ for cc in cluster_centres:
 
 print('Plotted 6c.')
 print('Crystalline cluster sizes: ', cluster_sizes)
+plt.suptitle(run_name)
 
 # plt.savefig('/Users/nico/Desktop/figures_worth_saving/charge_hopping_paper_intermediate_figs/tdot5_full_structure.eps',bbox_inches='tight')
 # plt.suptitle(strucfile_names[nn] + f' \# {mm} ')
