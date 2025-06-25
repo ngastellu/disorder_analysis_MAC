@@ -2,6 +2,7 @@
 
 import numpy as np
 import pickle
+import os
 from os import path
 from glob import glob
 from qcnico.lattice import cartesian_product
@@ -65,6 +66,9 @@ def get_rings_from_subsamp(full_pos,nprocs,rank, nn, save_explicit_rings=True, m
 
     if save_hexs_only:
         print('!!!!! WARNING !!!!!\n`save_hexs_only` kwarg has been set to True; `get_rings_from_subsamp` will not write many of the files necessary to rebuild the rings from this MPI-segmented run.')
+    
+    if not os.path.exists(outdir):
+        os.makedirs(outdir,exist_ok=True)
     
     full_pos = full_pos[:,:2]
 
@@ -158,7 +162,7 @@ def rebuild_rings(nn,datadir=None):
 
     a = get_a(datadir,nn)
 
-    slice_inds = cartesian_product(np.arange(a),np.arange(a))
+    slice_inds = cartesian_product(np.arange(a),np.arange(a)) #indices of the sampled regions ('slices') of the MAC structure
 
     start = perf_counter()
 
@@ -273,23 +277,28 @@ def rebuild_rings(nn,datadir=None):
             print(f'{w} --> {Mglobal[w,:].sum()}', flush=True)
 
 
-    print('Searching for clusters...',flush=True)
-    start = perf_counter()
-    Mglobal = sparse.csr_array(Mglobal.astype(np.int8)) #use sparse CSR matrix: DRAMATICALLY speeds up matrix product
-    nuclei_neighbs = np.unique(Mglobal[nuclei,:].nonzero()[1])
-    Mglobal2 = Mglobal @ Mglobal
-    nuclei_next_neighbs = np.unique(Mglobal2[nuclei,:].nonzero()[1])
-    strict_6c = set(np.concatenate((nuclei,nuclei_neighbs,nuclei_next_neighbs)))
-    cluster_start = perf_counter()
-    print(f'[{cluster_start - start} seconds later] Starting `get_clusters`...',flush=True)
-    Mglobal = Mglobal.tolil() #convert to LIL format: fast row-slicing and efficient updates to sparsity structure
-    crystalline_clusters = get_clusters(nuclei, Mglobal.toarray(), strict_6c)
-    end = perf_counter()
-    print(f'**** Done! Total time = {end - start} seconds. Time spent in `get_cluster` = {end - cluster_start} seconds ****',flush=True)
 
-    cluster_sizes = np.array([len(c) for c in crystalline_clusters])
-    np.save(path.join(datadir, f'cryst_cluster_sizes-{nn}.npy'),cluster_sizes)
+    if len(nuclei) > 0:
+        print('Searching for clusters...',flush=True)
+        start = perf_counter()
+        Mglobal = sparse.csr_array(Mglobal.astype(np.int8)) #use sparse CSR matrix: DRAMATICALLY speeds up matrix product
+        nuclei_neighbs = np.unique(Mglobal[nuclei,:].nonzero()[1])
+        Mglobal2 = Mglobal @ Mglobal
+        nuclei_next_neighbs = np.unique(Mglobal2[nuclei,:].nonzero()[1])
+        strict_6c = set(np.concatenate((nuclei,nuclei_neighbs,nuclei_next_neighbs)))
+        cluster_start = perf_counter()
+        print(f'[{cluster_start - start} seconds later] Starting `get_clusters`...',flush=True)
+        Mglobal = Mglobal.tolil() #convert to LIL format: fast row-slicing and efficient updates to sparsity structure
+        crystalline_clusters = get_clusters(nuclei, Mglobal.toarray(), strict_6c)
+        end = perf_counter()
+        print(f'**** Done! Total time = {end - start} seconds. Time spent in `get_cluster` = {end - cluster_start} seconds ****',flush=True)
 
+        cluster_sizes = np.array([len(c) for c in crystalline_clusters])
+        np.save(path.join(datadir, f'cryst_cluster_sizes-{nn}.npy'),cluster_sizes)
+
+        with open(path.join(datadir, f'clusters-{nn}.pkl'), 'wb')    as fo:
+            pickle.dump(crystalline_clusters,fo)
+    
     print('Building all_centres to match order in `all_lengths`...')
     start = perf_counter()
     all_centres = np.zeros((all_lengths.shape[0], 2))
@@ -301,8 +310,6 @@ def rebuild_rings(nn,datadir=None):
     print(f'Done! Total time = {end - start} seconds.',flush=True)
 
 
-    with open(path.join(datadir, f'clusters-{nn}.pkl'), 'wb')    as fo:
-        pickle.dump(crystalline_clusters,fo)
 
 
 
@@ -369,6 +376,40 @@ def ring_stats_rebuild(datadir, xlim=np.array([-np.inf,np.inf]), ylim=np.array([
         ring_stats[5+k] = (all_ring_lengths == n).sum()
     
     return ring_stats
+
+
+
+def crystalline_centres(datadir,nn=0):
+    """Obtains the positions of all of the crystalline hexagons in a structure described by `full_pos` whose ring data (as computed by `get_rings_from_subsamp` and `rebuild_rings`) is contained in `datadir`. 
+    The returned cryst. hex. centres are grouped by cluster."""
+
+    if datadir is None:
+        datadir = f'sample-{nn}'
+
+    try:
+        with open(path.join(datadir, f'clusters-{nn}.pkl'),'rb') as fo:
+            cryst_clusters = pickle.load(fo)
+    except FileNotFoundError as e:
+        print(e)
+        print('Returning empty list.')
+        return []
+    
+    with open(path.join(datadir, f'centres_hashmap-{nn}.pkl'), 'rb') as fo:
+        hex_centres_hashmap = pickle.load(fo)
+    
+    
+    # invert hashmap for faster lookups
+    nhex = len(hex_centres_hashmap)
+    hex_centres_global_array = np.zeros((nhex,2))
+    for r, k in hex_centres_hashmap.items():
+        hex_centres_global_array[k] = r
+
+    cryst_hex_centres = [] 
+    for C in cryst_clusters:
+        cryst_hex_centres.append(hex_centres_global_array[list(C)])
+    return cryst_hex_centres  
+
+
 
 
 def crystalline_atoms(full_pos, nn,datadir=None):
